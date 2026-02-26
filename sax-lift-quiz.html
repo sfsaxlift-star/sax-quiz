@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sax Lift - Find Your Lift Table</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sax-quiz {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .sax-quiz__header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .sax-quiz__title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .sax-quiz__subtitle {
+      font-size: 16px;
+      color: #64748b;
+    }
+
+    .sax-quiz__progress {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .sax-quiz__progress-step {
+      flex: 1;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      transition: background 0.3s ease;
+    }
+
+    .sax-quiz__progress-step.active {
+      background: #0066cc;
+    }
+
+    .sax-quiz__progress-step.completed {
+      background: #10b981;
+    }
+
+    .sax-quiz__question {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .sax-quiz__question.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sax-quiz__question-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .sax-quiz__question-helper {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .sax-quiz__options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sax-quiz__option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fff;
+    }
+
+    .sax-quiz__option:hover {
+      border-color: #0066cc;
+      background: #f8fafc;
+    }
+
+    .sax-quiz__option.selected {
+      border-color: #0066cc;
+      background: #eff6ff;
+    }
+
+    .sax-quiz__option-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .sax-quiz__option.selected .sax-quiz__option-radio {
+      border-color: #0066cc;
+      background: #0066cc;
+    }
+
+    .sax-quiz__option.selected .sax-quiz__option-radio::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .sax-quiz__option-content {
+      flex: 1;
+    }
+
+    .sax-quiz__option-label {
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .sax-quiz__option-desc {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .sax-quiz__nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      gap: 16px;
+    }
+
+    .sax-quiz__btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .sax-quiz__btn--back {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .sax-quiz__btn--back:hover {
+      background: #e2e8f0;
+    }
+
+    .sax-quiz__btn--next {
+      background: #0066cc;
+      color: #fff;
+      margin-left: auto;
+    }
+
+    .sax-quiz__btn--next:hover {
+      background: #0052a3;
+    }
+
+    .sax-quiz__btn--next:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    /* Form Styles */
+    .sax-quiz__form {
+      display: none;
+    }
+
+    .sax-quiz__form.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .sax-quiz__form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .sax-quiz__form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sax-quiz__form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .sax-quiz__label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .sax-quiz__label .required {
+      color: #dc2626;
+    }
+
+    .sax-quiz__input,
+    .sax-quiz__select,
+    .sax-quiz__textarea {
+      padding: 12px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .sax-quiz__input:focus,
+    .sax-quiz__select:focus,
+    .sax-quiz__textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+    }
+
+    .sax-quiz__input.error,
+    .sax-quiz__select.error {
+      border-color: #dc2626;
+    }
+
+    .sax-quiz__error-msg {
+      font-size: 12px;
+      color: #dc2626;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .sax-quiz__error-msg.visible {
+      display: block;
+    }
+
+    .sax-quiz__textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .sax-quiz__consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .sax-quiz__consent input {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .sax-quiz__consent-text {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .sax-quiz__consent-text a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    /* Results/Recommendation */
+    .sax-quiz__result {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .sax-quiz__result.active {
+      display: block;
+    }
+
+    .sax-quiz__result-icon {
+      width: 80px;
+      height: 80px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .sax-quiz__result-icon svg {
+      width: 40px;
+      height: 40px;
+      color: #fff;
+    }
+
+    .sax-quiz__result-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+    }
+
+    .sax-quiz__result-text {
+      font-size: 16px;
+      color: #64748b;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .sax-quiz__recommendation {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .sax-quiz__rec-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #0066cc;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .sax-quiz__rec-badge.custom {
+      background: #7c3aed;
+    }
+
+    .sax-quiz__rec-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .sax-quiz__rec-specs {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .sax-quiz__rec-features {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sax-quiz__rec-features li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .sax-quiz__rec-features li::before {
+      content: '✓';
+      color: #10b981;
+      font-weight: bold;
+    }
+
+    /* Language Selector */
+    .sax-quiz__lang {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .sax-quiz__lang-select {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    /* Phone Input with Country Code */
+    .sax-quiz__phone-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sax-quiz__phone-code {
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .sax-quiz__phone-number {
+      flex: 1;
+    }
+
+    /* Loading State */
+    .sax-quiz__loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .sax-quiz__loading.active {
+      display: block;
+    }
+
+    .sax-quiz__spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #0066cc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .sax-quiz {
+        padding: 16px;
+        border-radius: 0;
+      }
+
+      .sax-quiz__title {
+        font-size: 22px;
+      }
+
+      .sax-quiz__form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sax-quiz__nav {
+        flex-direction: column-reverse;
+      }
+
+      .sax-quiz__btn {
+        width: 100%;
+      }
+
+      .sax-quiz__btn--next {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sax-quiz" id="saxQuiz">
+  <!-- Language Selector -->
+  <div class="sax-quiz__lang">
+    <select class="sax-quiz__lang-select" id="langSelect" onchange="SaxQuiz.changeLanguage(this.value)">
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+      <option value="da">Dansk</option>
+      <option value="nl">Nederlands</option>
+      <option value="fr">Français</option>
+      <option value="sv">Svenska</option>
+      <option value="pl">Polski</option>
+    </select>
+  </div>
+
+  <!-- Header -->
+  <div class="sax-quiz__header">
+    <h2 class="sax-quiz__title" data-i18n="title">Find Your Perfect Lift Table</h2>
+    <p class="sax-quiz__subtitle" data-i18n="subtitle">Answer 6 quick questions to get a personalized recommendation</p>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="sax-quiz__progress" id="progressBar">
+    <div class="sax-quiz__progress-step"></div>
+    <div class="sax-quiz__progress-step"></div>
+    <div class="sax-quiz__progress-step"></div>
+    <div class="sax-quiz__progress-step"></div>
+    <div class="sax-quiz__progress-step"></div>
+    <div class="sax-quiz__progress-step"></div>
+  </div>
+
+  <!-- Questions Container -->
+  <div id="questionsContainer">
+    <!-- Q1: Application / Use Case -->
+    <div class="sax-quiz__question active" data-question="1">
+      <h3 class="sax-quiz__question-title" data-i18n="q1_title">What will you use the lift table for?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q1_helper">Select your primary application</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="loading_unloading" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q1_opt1_label">Loading / Unloading</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt1_desc">Dock leveling, truck loading, pallet handling</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="workstation" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q1_opt2_label">Ergonomic Workstation</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt2_desc">Assembly, packaging, inspection work</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="production_line" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q1_opt3_label">Production Line Integration</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt3_desc">Conveyor connection, machine feeding</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="vehicle_maintenance" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q1_opt4_label">Vehicle / Equipment Maintenance</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt4_desc">Car lifts, motorcycle lifts, equipment servicing</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="other" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q1_opt5_label">Other / Custom Application</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt5_desc">Special requirements or not listed above</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2: Capacity -->
+    <div class="sax-quiz__question" data-question="2">
+      <h3 class="sax-quiz__question-title" data-i18n="q2_title">What capacity do you need?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q2_helper">Maximum weight the lift table must handle</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="500" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label">Up to 500 kg</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt1_desc">Light loads, small packages</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="1000" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label">500 – 1,000 kg</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt2_desc">Standard pallets, medium loads</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="2000" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label">1,000 – 2,000 kg</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt3_desc">Heavy pallets, industrial use</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="4000" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label">2,000 – 4,000 kg</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt4_desc">Heavy-duty industrial applications</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="4000+" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q2_opt5_label">Over 4,000 kg</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt5_desc">Extra heavy-duty, custom engineering required</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="not_sure">Not sure yet</div>
+            <div class="sax-quiz__option-desc" data-i18n="q2_opt6_desc">I need help determining the right capacity</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3: Lift Height -->
+    <div class="sax-quiz__question" data-question="3">
+      <h3 class="sax-quiz__question-title" data-i18n="q3_title">What lift height do you need?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q3_helper">From lowest to highest position</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="low_profile" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q3_opt1_label">Low profile (floor level start)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt1_desc">Closed height ~80mm, for pallet trucks</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="standard" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q3_opt2_label">Standard height (up to 1,000mm)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt2_desc">Typical ergonomic working height</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="high" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q3_opt3_label">High lift (1,000 – 1,800mm)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt3_desc">Truck loading, elevated work</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="extra_high" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q3_opt4_label">Extra high lift (over 1,800mm)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt4_desc">Mezzanine loading, special applications</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="not_sure">Not sure yet</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt5_desc">I need help determining the right height</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: Power Type & Mobility -->
+    <div class="sax-quiz__question" data-question="4">
+      <h3 class="sax-quiz__question-title" data-i18n="q4_title">What type of lift table do you need?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q4_helper">Power source and installation type</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="electric_stationary" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt1_label">Electric – Stationary</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt1_desc">Fixed installation, mains powered</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="electric_mobile" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt2_label">Electric – Mobile</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt2_desc">On wheels, can be moved around facility</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="hydraulic_foot" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt3_label">Hydraulic – Foot pump</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt3_desc">No power required, manual operation</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="pneumatic" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt4_label">Pneumatic (air-powered)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt4_desc">Compressed air, good for clean environments</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="not_sure">Not sure yet</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt5_desc">I need advice on the best option</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5: Environment / Material -->
+    <div class="sax-quiz__question" data-question="5">
+      <h3 class="sax-quiz__question-title" data-i18n="q5_title">What's your working environment?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q5_helper">This determines material and finish requirements</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="standard_indoor" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q5_opt1_label">Standard indoor (warehouse, factory)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt1_desc">Painted steel, standard finish</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="wet_washdown" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q5_opt2_label">Wet / Washdown environment</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt2_desc">Food, pharma – stainless steel recommended</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="outdoor_corrosive" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q5_opt3_label">Outdoor / Corrosive environment</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt3_desc">Galvanized steel for weather resistance</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="explosive_atex" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q5_opt4_label">Explosive atmosphere (ATEX)</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt4_desc">Certified for hazardous zones</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="cleanroom" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q5_opt5_label">Cleanroom / Hygienic</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt5_desc">Smooth surfaces, easy to clean</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6: Timeline -->
+    <div class="sax-quiz__question" data-question="6">
+      <h3 class="sax-quiz__question-title" data-i18n="q6_title">When do you need the lift table?</h3>
+      <p class="sax-quiz__question-helper" data-i18n="q6_helper">This helps us prioritize your quote</p>
+      <div class="sax-quiz__options">
+        <div class="sax-quiz__option" data-value="urgent" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q6_opt1_label">Urgent – Within 2 weeks</div>
+            <div class="sax-quiz__option-desc" data-i18n="q6_opt1_desc">Fast delivery from 2,000+ units in stock</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="soon" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q6_opt2_label">Soon – Within 1-2 months</div>
+            <div class="sax-quiz__option-desc" data-i18n="q6_opt2_desc">Standard lead time</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="planning" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q6_opt3_label">Planning phase – 3+ months</div>
+            <div class="sax-quiz__option-desc" data-i18n="q6_opt3_desc">Project planning, budgeting</div>
+          </div>
+        </div>
+        <div class="sax-quiz__option" data-value="just_researching" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q6_opt4_label">Just researching</div>
+            <div class="sax-quiz__option-desc" data-i18n="q6_opt4_desc">No immediate need, gathering information</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Form -->
+  <div class="sax-quiz__form" id="contactForm">
+    <h3 class="sax-quiz__question-title" data-i18n="form_title">Get Your Personalized Quote</h3>
+    <p class="sax-quiz__question-helper" data-i18n="form_subtitle">Fill in your details and we'll send your recommendation with pricing</p>
+    
+    <div class="sax-quiz__form-grid">
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_firstname">First Name <span class="required">*</span></label>
+        <input type="text" class="sax-quiz__input" id="firstName" required>
+        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
+      </div>
+      
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_lastname">Last Name <span class="required">*</span></label>
+        <input type="text" class="sax-quiz__input" id="lastName" required>
+        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
+      </div>
+      
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_email">Work Email <span class="required">*</span></label>
+        <input type="email" class="sax-quiz__input" id="email" required>
+        <span class="sax-quiz__error-msg" id="emailError" data-i18n="error_email">Please enter a valid work email</span>
+      </div>
+      
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_phone">Phone</label>
+        <div class="sax-quiz__phone-wrapper">
+          <select class="sax-quiz__select sax-quiz__phone-code" id="phoneCode">
+            <option value="+45">🇩🇰 +45</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+31">🇳🇱 +31</option>
+            <option value="+46">🇸🇪 +46</option>
+            <option value="+47">🇳🇴 +47</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+32">🇧🇪 +32</option>
+            <option value="+48">🇵🇱 +48</option>
+            <option value="+43">🇦🇹 +43</option>
+            <option value="+41">🇨🇭 +41</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+358">🇫🇮 +358</option>
+            <option value="+420">🇨🇿 +420</option>
+          </select>
+          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" placeholder="12345678">
+        </div>
+      </div>
+      
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_company">Company <span class="required">*</span></label>
+        <input type="text" class="sax-quiz__input" id="company" required>
+        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
+      </div>
+      
+      <div class="sax-quiz__form-group">
+        <label class="sax-quiz__label" data-i18n="form_country">Country <span class="required">*</span></label>
+        <select class="sax-quiz__select" id="country" required>
+          <option value="">Select country</option>
+          <option value="DK">Denmark</option>
+          <option value="DE">Germany</option>
+          <option value="NL">Netherlands</option>
+          <option value="SE">Sweden</option>
+          <option value="NO">Norway</option>
+          <option value="FR">France</option>
+          <option value="BE">Belgium</option>
+          <option value="PL">Poland</option>
+          <option value="AT">Austria</option>
+          <option value="CH">Switzerland</option>
+          <option value="GB">United Kingdom</option>
+          <option value="IT">Italy</option>
+          <option value="ES">Spain</option>
+          <option value="FI">Finland</option>
+          <option value="CZ">Czech Republic</option>
+          <option value="OTHER">Other</option>
+        </select>
+        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
+      </div>
+      
+      <div class="sax-quiz__form-group full-width">
+        <label class="sax-quiz__label" data-i18n="form_message">Additional details (optional)</label>
+        <textarea class="sax-quiz__textarea" id="message" placeholder="Platform dimensions, special requirements, quantity needed..."></textarea>
+      </div>
+      
+      <div class="sax-quiz__form-group full-width">
+        <div class="sax-quiz__consent">
+          <input type="checkbox" id="consent" required>
+          <label class="sax-quiz__consent-text" for="consent" data-i18n="form_consent">
+            I agree to receive a quote and product information from Sax Lift. 
+            View our <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+          </label>
+        </div>
+        <span class="sax-quiz__error-msg" data-i18n="error_consent">Please accept to continue</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="sax-quiz__loading" id="loadingState">
+    <div class="sax-quiz__spinner"></div>
+    <p data-i18n="loading">Processing your request...</p>
+  </div>
+
+  <!-- Result -->
+  <div class="sax-quiz__result" id="resultState">
+    <div class="sax-quiz__result-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h3 class="sax-quiz__result-title" data-i18n="result_title">Thank You!</h3>
+    <p class="sax-quiz__result-text" data-i18n="result_text">We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.</p>
+    
+    <div class="sax-quiz__recommendation" id="recommendationBox">
+      <span class="sax-quiz__rec-badge" id="recBadge">Recommended</span>
+      <h4 class="sax-quiz__rec-title" id="recTitle">Standard Electric Lift Table</h4>
+      <p class="sax-quiz__rec-specs" id="recSpecs">Based on your requirements</p>
+      <ul class="sax-quiz__rec-features" id="recFeatures">
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="sax-quiz__nav" id="quizNav">
+    <button class="sax-quiz__btn sax-quiz__btn--back" id="backBtn" onclick="SaxQuiz.prevStep()" style="display: none;">
+      <span data-i18n="btn_back">Back</span>
+    </button>
+    <button class="sax-quiz__btn sax-quiz__btn--next" id="nextBtn" onclick="SaxQuiz.nextStep()" disabled>
+      <span data-i18n="btn_next">Next</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const SaxQuiz = (function() {
+  // State
+  let currentStep = 1;
+  const totalQuestions = 6;
+  let answers = {};
+  let language = 'en';
+  
+  // Free email domains to flag (soft validation)
+  const freeEmailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'gmx.com', 'web.de', 'gmx.de'];
+  
+  // Translations
+  const translations = {
+    en: {
+      title: "Find Your Perfect Lift Table",
+      subtitle: "Answer 6 quick questions to get a personalized recommendation",
+      q1_title: "What will you use the lift table for?",
+      q1_helper: "Select your primary application",
+      q1_opt1_label: "Loading / Unloading",
+      q1_opt1_desc: "Dock leveling, truck loading, pallet handling",
+      q1_opt2_label: "Ergonomic Workstation",
+      q1_opt2_desc: "Assembly, packaging, inspection work",
+      q1_opt3_label: "Production Line Integration",
+      q1_opt3_desc: "Conveyor connection, machine feeding",
+      q1_opt4_label: "Vehicle / Equipment Maintenance",
+      q1_opt4_desc: "Car lifts, motorcycle lifts, equipment servicing",
+      q1_opt5_label: "Other / Custom Application",
+      q1_opt5_desc: "Special requirements or not listed above",
+      q2_title: "What capacity do you need?",
+      q2_helper: "Maximum weight the lift table must handle",
+      q2_opt1_desc: "Light loads, small packages",
+      q2_opt2_desc: "Standard pallets, medium loads",
+      q2_opt3_desc: "Heavy pallets, industrial use",
+      q2_opt4_desc: "Heavy-duty industrial applications",
+      q2_opt5_label: "Over 4,000 kg",
+      q2_opt5_desc: "Extra heavy-duty, custom engineering required",
+      q2_opt6_desc: "I need help determining the right capacity",
+      not_sure: "Not sure yet",
+      q3_title: "What lift height do you need?",
+      q3_helper: "From lowest to highest position",
+      q3_opt1_label: "Low profile (floor level start)",
+      q3_opt1_desc: "Closed height ~80mm, for pallet trucks",
+      q3_opt2_label: "Standard height (up to 1,000mm)",
+      q3_opt2_desc: "Typical ergonomic working height",
+      q3_opt3_label: "High lift (1,000 – 1,800mm)",
+      q3_opt3_desc: "Truck loading, elevated work",
+      q3_opt4_label: "Extra high lift (over 1,800mm)",
+      q3_opt4_desc: "Mezzanine loading, special applications",
+      q3_opt5_desc: "I need help determining the right height",
+      q4_title: "What type of lift table do you need?",
+      q4_helper: "Power source and installation type",
+      q4_opt1_label: "Electric – Stationary",
+      q4_opt1_desc: "Fixed installation, mains powered",
+      q4_opt2_label: "Electric – Mobile",
+      q4_opt2_desc: "On wheels, can be moved around facility",
+      q4_opt3_label: "Hydraulic – Foot pump",
+      q4_opt3_desc: "No power required, manual operation",
+      q4_opt4_label: "Pneumatic (air-powered)",
+      q4_opt4_desc: "Compressed air, good for clean environments",
+      q4_opt5_desc: "I need advice on the best option",
+      q5_title: "What's your working environment?",
+      q5_helper: "This determines material and finish requirements",
+      q5_opt1_label: "Standard indoor (warehouse, factory)",
+      q5_opt1_desc: "Painted steel, standard finish",
+      q5_opt2_label: "Wet / Washdown environment",
+      q5_opt2_desc: "Food, pharma – stainless steel recommended",
+      q5_opt3_label: "Outdoor / Corrosive environment",
+      q5_opt3_desc: "Galvanized steel for weather resistance",
+      q5_opt4_label: "Explosive atmosphere (ATEX)",
+      q5_opt4_desc: "Certified for hazardous zones",
+      q5_opt5_label: "Cleanroom / Hygienic",
+      q5_opt5_desc: "Smooth surfaces, easy to clean",
+      q6_title: "When do you need the lift table?",
+      q6_helper: "This helps us prioritize your quote",
+      q6_opt1_label: "Urgent – Within 2 weeks",
+      q6_opt1_desc: "Fast delivery from 2,000+ units in stock",
+      q6_opt2_label: "Soon – Within 1-2 months",
+      q6_opt2_desc: "Standard lead time",
+      q6_opt3_label: "Planning phase – 3+ months",
+      q6_opt3_desc: "Project planning, budgeting",
+      q6_opt4_label: "Just researching",
+      q6_opt4_desc: "No immediate need, gathering information",
+      form_title: "Get Your Personalized Quote",
+      form_subtitle: "Fill in your details and we'll send your recommendation with pricing",
+      form_firstname: "First Name",
+      form_lastname: "Last Name",
+      form_email: "Work Email",
+      form_phone: "Phone",
+      form_company: "Company",
+      form_country: "Country",
+      form_message: "Additional details (optional)",
+      form_consent: "I agree to receive a quote and product information from Sax Lift. View our <a href='/privacy-policy' target='_blank'>Privacy Policy</a>.",
+      error_required: "This field is required",
+      error_email: "Please enter a valid work email",
+      error_consent: "Please accept to continue",
+      btn_back: "Back",
+      btn_next: "Next",
+      btn_submit: "Get My Quote",
+      loading: "Processing your request...",
+      result_title: "Thank You!",
+      result_text: "We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.",
+      rec_in_stock: "In Stock – Fast Delivery",
+      rec_custom: "Custom Solution",
+      email_warning: "For faster response, please use your work email"
+    },
+    de: {
+      title: "Finden Sie Ihren perfekten Hubtisch",
+      subtitle: "Beantworten Sie 6 kurze Fragen für eine persönliche Empfehlung",
+      q1_title: "Wofür werden Sie den Hubtisch verwenden?",
+      q1_helper: "Wählen Sie Ihre Hauptanwendung",
+      q1_opt1_label: "Be- / Entladen",
+      q1_opt1_desc: "Rampenausgleich, LKW-Beladung, Palettenhandling",
+      q1_opt2_label: "Ergonomischer Arbeitsplatz",
+      q1_opt2_desc: "Montage, Verpackung, Prüfarbeiten",
+      q1_opt3_label: "Produktionslinien-Integration",
+      q1_opt3_desc: "Förderband-Anschluss, Maschinenbeschickung",
+      q1_opt4_label: "Fahrzeug- / Gerätewartung",
+      q1_opt4_desc: "Autohebebühnen, Motorradhebebühnen, Gerätewartung",
+      q1_opt5_label: "Andere / Sonderanwendung",
+      q1_opt5_desc: "Spezielle Anforderungen",
+      btn_back: "Zurück",
+      btn_next: "Weiter",
+      btn_submit: "Angebot anfordern",
+      not_sure: "Noch nicht sicher",
+      // Add more German translations as needed
+    },
+    da: {
+      title: "Find dit perfekte løftebord",
+      subtitle: "Besvar 6 hurtige spørgsmål for en personlig anbefaling",
+      q1_title: "Hvad skal du bruge løftebordet til?",
+      q1_helper: "Vælg din primære anvendelse",
+      q1_opt1_label: "Læsning / Aflæsning",
+      q1_opt1_desc: "Rampeudligning, lastbillæsning, pallehåndtering",
+      q1_opt2_label: "Ergonomisk arbejdsstation",
+      q1_opt2_desc: "Montage, pakning, kontrolarbejde",
+      btn_back: "Tilbage",
+      btn_next: "Næste",
+      btn_submit: "Få mit tilbud",
+      not_sure: "Ikke sikker endnu",
+      // Add more Danish translations as needed
+    },
+    // Add other languages (nl, fr, sv, pl) as needed
+  };
+
+  // Get URL parameters (UTM, gclid)
+  function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      utm_source: params.get('utm_source') || '',
+      utm_medium: params.get('utm_medium') || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      utm_term: params.get('utm_term') || '',
+      utm_content: params.get('utm_content') || '',
+      gclid: params.get('gclid') || '',
+      fbclid: params.get('fbclid') || ''
+    };
+  }
+
+  // Calculate lead score
+  function calculateLeadScore() {
+    let score = 0;
+    
+    // Timeline scoring
+    const timelineScores = {
+      'urgent': 30,
+      'soon': 25,
+      'planning': 15,
+      'just_researching': 5
+    };
+    score += timelineScores[answers.timeline] || 10;
+    
+    // Capacity scoring (higher = more serious buyer)
+    const capacityScores = {
+      '500': 10,
+      '1000': 15,
+      '2000': 20,
+      '4000': 25,
+      '4000+': 30,
+      'not_sure': 5
+    };
+    score += capacityScores[answers.capacity] || 10;
+    
+    // Environment scoring (special = higher value)
+    const envScores = {
+      'standard_indoor': 10,
+      'wet_washdown': 20,
+      'outdoor_corrosive': 15,
+      'explosive_atex': 25,
+      'cleanroom': 20
+    };
+    score += envScores[answers.environment] || 10;
+    
+    // "Not sure" penalty
+    let notSureCount = 0;
+    Object.values(answers).forEach(val => {
+      if (val === 'not_sure') notSureCount++;
+    });
+    score -= notSureCount * 5;
+    
+    // Ensure score is between 0-100
+    return Math.max(0, Math.min(100, score));
+  }
+
+  // Determine if standard or custom solution
+  function isCustomSolution() {
+    const customTriggers = [
+      answers.capacity === '4000+',
+      answers.height === 'extra_high',
+      answers.environment === 'explosive_atex',
+      answers.application === 'other',
+      answers.type === 'pneumatic'
+    ];
+    return customTriggers.filter(Boolean).length >= 1;
+  }
+
+  // Generate recommendation
+  function generateRecommendation() {
+    const isCustom = isCustomSolution();
+    
+    let title = '';
+    let specs = '';
+    let features = [];
+    
+    if (isCustom) {
+      title = 'Custom Engineered Solution';
+      specs = 'Tailored to your specific requirements';
+      features = [
+        'Engineering consultation included',
+        'Custom dimensions and specifications',
+        'Dedicated project manager',
+        'Installation support available'
+      ];
+    } else {
+      // Build recommendation based on answers
+      const typeMap = {
+        'electric_stationary': 'Electric Lift Table',
+        'electric_mobile': 'Mobile Electric Lift Table',
+        'hydraulic_foot': 'Hydraulic Foot Pump Lift Table',
+        'pneumatic': 'Pneumatic Lift Table',
+        'not_sure': 'Lift Table'
+      };
+      
+      const materialMap = {
+        'standard_indoor': 'Painted Steel',
+        'wet_washdown': 'Stainless Steel',
+        'outdoor_corrosive': 'Galvanized Steel',
+        'cleanroom': 'Stainless Steel'
+      };
+      
+      title = typeMap[answers.type] || 'Standard Lift Table';
+      
+      const material = materialMap[answers.environment] || 'Standard';
+      const capacity = answers.capacity !== 'not_sure' ? answers.capacity + ' kg capacity' : '';
+      specs = [material, capacity].filter(Boolean).join(' • ');
+      
+      features = [
+        'From 2,000+ units in stock',
+        'Fast delivery available',
+        'CE certified',
+        'Full warranty included'
+      ];
+      
+      if (answers.height === 'low_profile') {
+        features.push('Low profile design for pallet trucks');
+      }
+      if (answers.environment === 'wet_washdown') {
+        features.push('IP65 rated for washdown');
+      }
+    }
+    
+    return { isCustom, title, specs, features };
+  }
+
+  // Push to GTM dataLayer
+  function pushToDataLayer(event, data = {}) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: event,
+      ...data
+    });
+  }
+
+  // Update progress bar
+  function updateProgress() {
+    const steps = document.querySelectorAll('.sax-quiz__progress-step');
+    steps.forEach((step, index) => {
+      step.classList.remove('active', 'completed');
+      if (index < currentStep - 1) {
+        step.classList.add('completed');
+      } else if (index === currentStep - 1) {
+        step.classList.add('active');
+      }
+    });
+  }
+
+  // Show/hide questions
+  function showQuestion(num) {
+    document.querySelectorAll('.sax-quiz__question').forEach(q => {
+      q.classList.remove('active');
+    });
+    const question = document.querySelector(`[data-question="${num}"]`);
+    if (question) {
+      question.classList.add('active');
+    }
+  }
+
+  // Update navigation buttons
+  function updateNav() {
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const nextBtnText = nextBtn.querySelector('span');
+    
+    // Back button
+    backBtn.style.display = currentStep > 1 ? 'block' : 'none';
+    
+    // Next button text
+    if (currentStep > totalQuestions) {
+      nextBtnText.textContent = translations[language]?.btn_submit || 'Get My Quote';
+    } else {
+      nextBtnText.textContent = translations[language]?.btn_next || 'Next';
+    }
+    
+    // Enable/disable based on selection
+    if (currentStep <= totalQuestions) {
+      const currentAnswer = answers[`q${currentStep}`];
+      nextBtn.disabled = !currentAnswer;
+    } else {
+      // On form, enable if required fields are filled
+      validateForm(false);
+    }
+  }
+
+  // Validate email
+  function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  // Check if free email
+  function isFreeEmail(email) {
+    const domain = email.split('@')[1]?.toLowerCase();
+    return freeEmailDomains.includes(domain);
+  }
+
+  // Validate form
+  function validateForm(showErrors = true) {
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const email = document.getElementById('email');
+    const company = document.getElementById('company');
+    const country = document.getElementById('country');
+    const consent = document.getElementById('consent');
+    
+    let isValid = true;
+    
+    // First name
+    if (!firstName.value.trim()) {
+      if (showErrors) showFieldError(firstName);
+      isValid = false;
+    } else {
+      hideFieldError(firstName);
+    }
+    
+    // Last name
+    if (!lastName.value.trim()) {
+      if (showErrors) showFieldError(lastName);
+      isValid = false;
+    } else {
+      hideFieldError(lastName);
+    }
+    
+    // Email
+    if (!email.value.trim() || !validateEmail(email.value)) {
+      if (showErrors) showFieldError(email, 'error_email');
+      isValid = false;
+    } else {
+      hideFieldError(email);
+    }
+    
+    // Company
+    if (!company.value.trim()) {
+      if (showErrors) showFieldError(company);
+      isValid = false;
+    } else {
+      hideFieldError(company);
+    }
+    
+    // Country
+    if (!country.value) {
+      if (showErrors) showFieldError(country);
+      isValid = false;
+    } else {
+      hideFieldError(country);
+    }
+    
+    // Consent
+    if (!consent.checked) {
+      if (showErrors) {
+        consent.parentElement.nextElementSibling.classList.add('visible');
+      }
+      isValid = false;
+    } else {
+      consent.parentElement.nextElementSibling.classList.remove('visible');
+    }
+    
+    document.getElementById('nextBtn').disabled = !isValid;
+    return isValid;
+  }
+
+  function showFieldError(field, errorKey = 'error_required') {
+    field.classList.add('error');
+    const errorMsg = field.parentElement.querySelector('.sax-quiz__error-msg');
+    if (errorMsg) {
+      errorMsg.classList.add('visible');
+    }
+  }
+
+  function hideFieldError(field) {
+    field.classList.remove('error');
+    const errorMsg = field.parentElement.querySelector('.sax-quiz__error-msg');
+    if (errorMsg) {
+      errorMsg.classList.remove('visible');
+    }
+  }
+
+  // Submit form
+  async function submitForm() {
+    const leadScore = calculateLeadScore();
+    const recommendation = generateRecommendation();
+    const urlParams = getUrlParams();
+    const isFreeEmailUsed = isFreeEmail(document.getElementById('email').value);
+    
+    const payload = {
+      // Contact info
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phoneCode').value + document.getElementById('phoneNumber').value.trim(),
+      company: document.getElementById('company').value.trim(),
+      country: document.getElementById('country').value,
+      message: document.getElementById('message').value.trim(),
+      
+      // Quiz answers
+      application: answers.q1 || '',
+      capacity: answers.q2 || '',
+      height: answers.q3 || '',
+      type: answers.q4 || '',
+      environment: answers.q5 || '',
+      timeline: answers.q6 || '',
+      
+      // Lead scoring & routing
+      leadScore: leadScore,
+      isCustomSolution: recommendation.isCustom,
+      isFreeEmail: isFreeEmailUsed,
+      recommendedProduct: recommendation.title,
+      
+      // Tracking
+      ...urlParams,
+      language: language,
+      quizVersion: '1.0',
+      submittedAt: new Date().toISOString(),
+      pageUrl: window.location.href
+    };
+    
+    // Push to GTM
+    pushToDataLayer('quiz_lead_submit', {
+      lead_score: leadScore,
+      is_custom_solution: recommendation.isCustom,
+      application: payload.application,
+      capacity: payload.capacity,
+      timeline: payload.timeline,
+      country: payload.country,
+      is_free_email: isFreeEmailUsed
+    });
+    
+    // Show loading
+    document.getElementById('contactForm').classList.remove('active');
+    document.getElementById('quizNav').style.display = 'none';
+    document.getElementById('loadingState').classList.add('active');
+    
+    // Format email body
+    const emailBody = formatEmailBody(payload, recommendation);
+    
+    try {
+      // =================================================================
+      // OPTION 1: Web3Forms (FREE - recommended, no signup required for testing)
+      // Replace YOUR_ACCESS_KEY with key from https://web3forms.com
+      // =================================================================
+      const formData = new FormData();
+      formData.append('access_key', '5820f2de-c2e5-4506-a432-722b6d0e69f6');
+      formData.append('to', 'sf@saxlift.dk');
+      formData.append('subject', `[Sax Lift Quiz] New Lead: ${payload.firstName} ${payload.lastName} - ${payload.company} (Score: ${leadScore})`);
+      formData.append('from_name', 'Sax Lift Quiz');
+      formData.append('replyto', payload.email);
+      
+      // All form fields
+      formData.append('Name', `${payload.firstName} ${payload.lastName}`);
+      formData.append('Email', payload.email);
+      formData.append('Phone', payload.phone);
+      formData.append('Company', payload.company);
+      formData.append('Country', payload.country);
+      formData.append('Message', payload.message || 'N/A');
+      formData.append('Application', payload.application);
+      formData.append('Capacity', payload.capacity);
+      formData.append('Lift_Height', payload.height);
+      formData.append('Power_Type', payload.type);
+      formData.append('Environment', payload.environment);
+      formData.append('Timeline', payload.timeline);
+      formData.append('Lead_Score', leadScore);
+      formData.append('Recommendation', recommendation.title);
+      formData.append('Is_Custom_Solution', recommendation.isCustom ? 'Yes' : 'No');
+      formData.append('UTM_Source', urlParams.utm_source);
+      formData.append('UTM_Medium', urlParams.utm_medium);
+      formData.append('UTM_Campaign', urlParams.utm_campaign);
+      formData.append('GCLID', urlParams.gclid);
+      formData.append('Page_URL', payload.pageUrl);
+      formData.append('Submitted_At', payload.submittedAt);
+      
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showResult(recommendation);
+      } else {
+        throw new Error(result.message || 'Submit failed');
+      }
+      
+    } catch (error) {
+      console.error('Submit error:', error);
+      
+      // =================================================================
+      // FALLBACK: Open email client with pre-filled data
+      // =================================================================
+      const mailtoLink = `mailto:sf@saxlift.dk?subject=${encodeURIComponent(`[Sax Lift Quiz] New Lead: ${payload.firstName} ${payload.lastName} - ${payload.company}`)}&body=${encodeURIComponent(emailBody)}`;
+      
+      // Try to send via mailto as backup
+      window.location.href = mailtoLink;
+      
+      // Still show result
+      showResult(recommendation);
+      
+      // Push error to GTM
+      pushToDataLayer('quiz_submit_error', {
+        error_message: error.message,
+        fallback_used: 'mailto'
+      });
+    }
+  }
+  
+  // Format email body for mailto fallback and readable emails
+  function formatEmailBody(payload, recommendation) {
+    return `
+NEW LEAD FROM SAX LIFT QUIZ
+============================
+
+CONTACT INFORMATION
+-------------------
+Name: ${payload.firstName} ${payload.lastName}
+Email: ${payload.email}
+Phone: ${payload.phone}
+Company: ${payload.company}
+Country: ${payload.country}
+
+QUIZ ANSWERS
+------------
+Application: ${payload.application}
+Capacity: ${payload.capacity}
+Lift Height: ${payload.height}
+Power Type: ${payload.type}
+Environment: ${payload.environment}
+Timeline: ${payload.timeline}
+
+Additional Message:
+${payload.message || 'N/A'}
+
+LEAD ANALYSIS
+-------------
+Lead Score: ${payload.leadScore}/100
+Recommendation: ${recommendation.title}
+Solution Type: ${recommendation.isCustom ? 'CUSTOM SOLUTION REQUIRED' : 'Standard - In Stock'}
+Free Email Used: ${payload.isFreeEmail ? 'Yes (lower priority)' : 'No (work email)'}
+
+TRACKING DATA
+-------------
+UTM Source: ${payload.utm_source || 'N/A'}
+UTM Medium: ${payload.utm_medium || 'N/A'}
+UTM Campaign: ${payload.utm_campaign || 'N/A'}
+GCLID: ${payload.gclid || 'N/A'}
+Language: ${payload.language}
+Page URL: ${payload.pageUrl}
+Submitted: ${payload.submittedAt}
+    `.trim();
+  }
+
+  // Show result
+  function showResult(recommendation) {
+    document.getElementById('loadingState').classList.remove('active');
+    document.getElementById('resultState').classList.add('active');
+    
+    // Update recommendation box
+    const badge = document.getElementById('recBadge');
+    badge.textContent = recommendation.isCustom 
+      ? (translations[language]?.rec_custom || 'Custom Solution')
+      : (translations[language]?.rec_in_stock || 'In Stock – Fast Delivery');
+    badge.classList.toggle('custom', recommendation.isCustom);
+    
+    document.getElementById('recTitle').textContent = recommendation.title;
+    document.getElementById('recSpecs').textContent = recommendation.specs;
+    
+    const featuresList = document.getElementById('recFeatures');
+    featuresList.innerHTML = recommendation.features.map(f => `<li>${f}</li>`).join('');
+    
+    // Push to GTM
+    pushToDataLayer('quiz_completed', {
+      recommendation_type: recommendation.isCustom ? 'custom' : 'standard',
+      recommendation_product: recommendation.title
+    });
+  }
+
+  // Public methods
+  return {
+    selectOption: function(element) {
+      // Remove selected from siblings
+      element.parentElement.querySelectorAll('.sax-quiz__option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      // Select this option
+      element.classList.add('selected');
+      
+      // Store answer
+      const value = element.dataset.value;
+      answers[`q${currentStep}`] = value;
+      
+      // Map to named keys for payload
+      const keyMap = {
+        1: 'application',
+        2: 'capacity', 
+        3: 'height',
+        4: 'type',
+        5: 'environment',
+        6: 'timeline'
+      };
+      answers[keyMap[currentStep]] = value;
+      
+      // Push to GTM
+      pushToDataLayer('quiz_answer', {
+        question_number: currentStep,
+        question_key: keyMap[currentStep],
+        answer_value: value
+      });
+      
+      updateNav();
+    },
+    
+    nextStep: function() {
+      if (currentStep <= totalQuestions) {
+        currentStep++;
+        updateProgress();
+        
+        if (currentStep <= totalQuestions) {
+          showQuestion(currentStep);
+          
+          // Push to GTM
+          pushToDataLayer('quiz_step', {
+            step_number: currentStep
+          });
+        } else {
+          // Show form
+          document.querySelectorAll('.sax-quiz__question').forEach(q => {
+            q.classList.remove('active');
+          });
+          document.getElementById('contactForm').classList.add('active');
+          
+          // Push to GTM
+          pushToDataLayer('quiz_form_view');
+        }
+        
+        updateNav();
+      } else {
+        // Submit form
+        if (validateForm(true)) {
+          submitForm();
+        }
+      }
+    },
+    
+    prevStep: function() {
+      if (currentStep > 1) {
+        if (currentStep > totalQuestions) {
+          // Going back from form to last question
+          document.getElementById('contactForm').classList.remove('active');
+        }
+        
+        currentStep--;
+        updateProgress();
+        showQuestion(currentStep);
+        updateNav();
+        
+        // Push to GTM
+        pushToDataLayer('quiz_back', {
+          step_number: currentStep
+        });
+      }
+    },
+    
+    changeLanguage: function(lang) {
+      language = lang;
+      const trans = translations[lang] || translations.en;
+      
+      // Update all translatable elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (trans[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = trans[key];
+          } else {
+            el.innerHTML = trans[key];
+          }
+        }
+      });
+      
+      updateNav();
+      
+      // Push to GTM
+      pushToDataLayer('quiz_language_change', {
+        language: lang
+      });
+    },
+    
+    init: function() {
+      // Detect browser language
+      const browserLang = navigator.language?.split('-')[0] || 'en';
+      if (translations[browserLang]) {
+        document.getElementById('langSelect').value = browserLang;
+        this.changeLanguage(browserLang);
+      }
+      
+      // Set up form validation listeners
+      const formInputs = document.querySelectorAll('#contactForm input, #contactForm select');
+      formInputs.forEach(input => {
+        input.addEventListener('input', () => validateForm(false));
+        input.addEventListener('change', () => validateForm(false));
+      });
+      
+      // Auto-detect country from phone code selection
+      const countryPhoneMap = {
+        '+45': 'DK', '+49': 'DE', '+31': 'NL', '+46': 'SE', '+47': 'NO',
+        '+33': 'FR', '+32': 'BE', '+48': 'PL', '+43': 'AT', '+41': 'CH',
+        '+44': 'GB', '+39': 'IT', '+34': 'ES', '+358': 'FI', '+420': 'CZ'
+      };
+      
+      document.getElementById('phoneCode').addEventListener('change', function() {
+        const countrySelect = document.getElementById('country');
+        if (!countrySelect.value && countryPhoneMap[this.value]) {
+          countrySelect.value = countryPhoneMap[this.value];
+        }
+      });
+      
+      updateProgress();
+      updateNav();
+      
+      // Push init to GTM
+      pushToDataLayer('quiz_start', {
+        quiz_version: '1.0'
+      });
+    }
+  };
+})();
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  SaxQuiz.init();
+});
+</script>
+
+</body>
+</html>
