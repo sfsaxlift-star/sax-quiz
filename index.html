@@ -1752,13 +1752,6 @@ Submitted: ${payload.submittedAt}
     },
     
     init: function() {
-      // Detect browser language
-      const browserLang = navigator.language?.split('-')[0] || 'en';
-      if (translations[browserLang]) {
-        document.getElementById('langSelect').value = browserLang;
-        this.changeLanguage(browserLang);
-      }
-      
       // Set up form validation listeners
       const formInputs = document.querySelectorAll('#contactForm input, #contactForm select');
       formInputs.forEach(input => {
