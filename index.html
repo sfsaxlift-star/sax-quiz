@@ -537,18 +537,16 @@
 <body>
 
 <div class="sax-quiz" id="saxQuiz">
-  <!-- Language Selector -->
-  <div class="sax-quiz__lang">
-    <select class="sax-quiz__lang-select" id="langSelect" onchange="SaxQuiz.changeLanguage(this.value)">
-      <option value="en">English</option>
-      <option value="de">Deutsch</option>
-      <option value="da">Dansk</option>
-      <option value="nl">Nederlands</option>
-      <option value="fr">Français</option>
-      <option value="sv">Svenska</option>
-      <option value="pl">Polski</option>
-    </select>
-  </div>
+  <!-- Language Selector (hidden, used by auto-detection) -->
+  <select id="langSelect" style="display:none;">
+    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+    <option value="da">Dansk</option>
+    <option value="nl">Nederlands</option>
+    <option value="fr">Français</option>
+    <option value="sv">Svenska</option>
+    <option value="pl">Polski</option>
+  </select>
 
   <!-- Header -->
   <div class="sax-quiz__header">
