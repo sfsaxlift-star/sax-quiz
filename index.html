@@ -763,6 +763,16 @@
             <div class="sax-quiz__option-desc" data-i18n="q4_opt3_desc">No power required, manual operation</div>
           </div>
         </div>
+        <div class="sax-quiz__option" data-value="hydraulic_stationary" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+          </div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt4_label">Hydraulic – Stationary</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt4_desc_hydraulic">Fixed installation, hydraulic powered</div>
+          </div>
+        </div>
         <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
           <div class="sax-quiz__option-radio"></div>
           <div class="sax-quiz__option-icon">
@@ -1074,6 +1084,8 @@ const SaxQuiz = (function() {
       q4_opt2_desc: "On wheels, can be moved around facility",
       q4_opt3_label: "Hydraulic – Foot pump",
       q4_opt3_desc: "No power required, manual operation",
+      q4_opt4_label: "Hydraulic – Stationary",
+      q4_opt4_desc_hydraulic: "Fixed installation, hydraulic powered",
       q4_opt4_desc: "I need advice on the best option",
       q5_title: "What's your working environment?",
       q5_helper: "This determines material and finish requirements",
@@ -1253,6 +1265,7 @@ const SaxQuiz = (function() {
         'electric_stationary': 'Electric Lift Table',
         'electric_mobile': 'Mobile Electric Lift Table',
         'hydraulic_foot': 'Hydraulic Foot Pump Lift Table',
+        'hydraulic_stationary': 'Hydraulic Stationary Lift Table',
 'not_sure': 'Lift Table'
       };
       
