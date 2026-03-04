@@ -428,6 +428,100 @@
       font-weight: bold;
     }
 
+    /* Product Match Cards */
+    .sax-quiz__products {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .sax-quiz__products-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+    }
+
+    .sax-quiz__product-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+    }
+
+    .sax-quiz__product-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .sax-quiz__product-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sax-quiz__product-card img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: contain;
+      background: #f8fafc;
+      padding: 10px;
+    }
+
+    .sax-quiz__product-card-body {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sax-quiz__product-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .sax-quiz__product-card-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: #37a657;
+      margin-bottom: 6px;
+    }
+
+    .sax-quiz__product-card-stock {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .sax-quiz__product-card-stock.in-stock { color: #37a657; }
+    .sax-quiz__product-card-stock.out-stock { color: #94a3b8; }
+
+    .sax-quiz__product-card-btn {
+      display: block;
+      text-align: center;
+      background: #37a657;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: auto;
+    }
+
+    .sax-quiz__product-card-btn:hover { background: #2a8046; }
+
+    .sax-quiz__products-loading {
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      padding: 16px 0;
+    }
+
     /* Language Selector */
     .sax-quiz__lang {
       display: flex;
@@ -1014,6 +1108,11 @@
         <li>Feature 1</li>
         <li>Feature 2</li>
       </ul>
+    </div>
+
+    <div id="productMatches" class="sax-quiz__products" style="display:none;">
+      <p class="sax-quiz__products-title">Matching Products From Our Range</p>
+      <div class="sax-quiz__product-cards" id="productCards"></div>
     </div>
   </div>
 
@@ -1635,6 +1734,158 @@ Submitted: ${payload.submittedAt}
     `.trim();
   }
 
+  // ── Product feed matching ─────────────────────────────────────────
+  const FEED_URL = 'https://feeds.datafeedwatch.com/144712/952e3a22cc8ae57643397c0330d6fcaa9809358b.xml';
+  const CORS_PROXY = 'https://api.allorigins.win/get?url=';
+  const G_NS = 'http://base.google.com/ns/1.0';
+
+  // Which product_type values match each power-type answer
+  const POWER_TYPES = {
+    electric_stationary:  ['Single Scissor Lift Tables', '230V Lift Tables', 'Low profile scissor lift tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
+    electric_mobile:      ['Electrical mobile lift tables'],
+    hydraulic_foot:       ['Manual mobile lift tables'],
+    hydraulic_stationary: ['Single Scissor Lift Tables', 'Tandem scissor lift tables', 'Low profile scissor lift tables'],
+    not_sure:             []
+  };
+
+  // Which product_type values match each environment answer
+  // Types not listed here are assumed standard_indoor
+  const ENV_TYPES = {
+    wet_washdown:      ['Stainless Steel'],
+    cleanroom:         ['Stainless Steel'],
+    outdoor_corrosive: ['Galvanised scissor lift tables'],
+    explosive_atex:    ['ATEX LIFT TABLES', 'Mobile lift tables - ATEX']
+  };
+
+  // Which product_type values match each application answer
+  const APP_TYPES = {
+    loading_unloading:  ['Low profile scissor lift tables', 'Electrical mobile lift tables', 'Manual mobile lift tables'],
+    workstation:        ['Single Scissor Lift Tables', 'Electrical mobile lift tables', 'Manual mobile lift tables', '230V Lift Tables'],
+    production_line:    ['Single Scissor Lift Tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
+    vehicle_maintenance:['Single Scissor Lift Tables', 'Low profile scissor lift tables']
+  };
+
+  function parseCapacity(title) {
+    const m = title.match(/(\d[\d,]*)\s*kg/i);
+    return m ? parseInt(m[1].replace(/,/g, ''), 10) : null;
+  }
+
+  function parseHeight(str) {
+    const m = (str || '').match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  function capacityMatches(kg, quizCap) {
+    if (!kg || quizCap === 'not_sure') return true;
+    const ranges = { '500': [0,500], '1000': [1,1000], '2000': [1,2000], '4000': [1,4000], '4000+': [4001, Infinity] };
+    const [lo, hi] = ranges[quizCap] || [0, Infinity];
+    return kg <= hi && kg >= (quizCap === '500' ? 0 : 1);
+  }
+
+  function heightMatches(mm, quizH) {
+    if (!mm || quizH === 'not_sure') return true;
+    if (quizH === 'low_profile')  return mm <= 800;
+    if (quizH === 'standard')     return mm > 400 && mm <= 1200;
+    if (quizH === 'high')         return mm > 800 && mm <= 1800;
+    if (quizH === 'extra_high')   return mm > 1800;
+    return true;
+  }
+
+  function scoreProduct(p) {
+    let score = 0;
+    const type = p.type;
+
+    // Environment (4 pts) — highest priority
+    const envMatch = ENV_TYPES[answers.environment];
+    if (envMatch) {
+      if (envMatch.includes(type)) score += 4;
+      else return 0; // wrong environment = disqualify
+    } else {
+      // standard_indoor: exclude specialist types
+      const allSpecial = Object.values(ENV_TYPES).flat();
+      if (!allSpecial.includes(type)) score += 4;
+    }
+
+    // Power type (3 pts)
+    const powerMatch = POWER_TYPES[answers.type] || [];
+    if (powerMatch.includes(type)) score += 3;
+    else if (answers.type === 'not_sure') score += 1;
+
+    // Capacity (2 pts)
+    if (capacityMatches(p.capacityKg, answers.capacity)) score += 2;
+
+    // Height (1 pt)
+    if (heightMatches(p.heightMm, answers.height)) score += 1;
+
+    // Application (1 pt)
+    const appMatch = APP_TYPES[answers.application] || [];
+    if (appMatch.includes(type)) score += 1;
+
+    // In-stock bonus
+    if (p.availability === 'in stock') score += 0.5;
+
+    return score;
+  }
+
+  async function loadProductRecommendations() {
+    const container = document.getElementById('productMatches');
+    const cards = document.getElementById('productCards');
+    container.style.display = 'block';
+    cards.innerHTML = '<p class="sax-quiz__products-loading">Finding matching products…</p>';
+
+    try {
+      let xmlText;
+      try {
+        const res = await fetch(FEED_URL);
+        if (!res.ok) throw new Error('direct fetch failed');
+        xmlText = await res.text();
+      } catch {
+        const res = await fetch(CORS_PROXY + encodeURIComponent(FEED_URL));
+        const json = await res.json();
+        xmlText = json.contents;
+      }
+
+      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const g = (el, tag) => el.getElementsByTagNameNS(G_NS, tag)[0]?.textContent?.trim() || '';
+
+      const products = [...xml.querySelectorAll('item')].map(item => ({
+        title:        g(item, 'title'),
+        link:         g(item, 'link'),
+        image:        g(item, 'image_link'),
+        price:        g(item, 'price'),
+        availability: g(item, 'availability'),
+        type:         g(item, 'product_type'),
+        capacityKg:   parseCapacity(g(item, 'title')),
+        heightMm:     parseHeight(g(item, 'product_height'))
+      })).filter(p => p.type !== 'Accessories' && p.link);
+
+      const top = products
+        .map(p => ({ ...p, score: scoreProduct(p) }))
+        .filter(p => p.score >= 5)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      if (!top.length) { container.style.display = 'none'; return; }
+
+      cards.innerHTML = top.map(p => `
+        <div class="sax-quiz__product-card">
+          <img src="${p.image}" alt="${p.title}" loading="lazy" onerror="this.style.display='none'">
+          <div class="sax-quiz__product-card-body">
+            <div class="sax-quiz__product-card-title">${p.title}</div>
+            <div class="sax-quiz__product-card-price">${p.price}</div>
+            <div class="sax-quiz__product-card-stock ${p.availability === 'in stock' ? 'in-stock' : 'out-stock'}">
+              ${p.availability === 'in stock' ? '● In Stock' : '○ Lead time applies'}
+            </div>
+            <a href="${p.link}" target="_blank" rel="noopener" class="sax-quiz__product-card-btn">View Product →</a>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      container.style.display = 'none';
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────
+
   // Show result
   function showResult(recommendation) {
     document.getElementById('loadingState').classList.remove('active');
@@ -1653,6 +1904,9 @@ Submitted: ${payload.submittedAt}
     const featuresList = document.getElementById('recFeatures');
     featuresList.innerHTML = recommendation.features.map(f => `<li>${f}</li>`).join('');
     
+    // Load live product matches from feed
+    loadProductRecommendations();
+
     // Push to GTM
     pushToDataLayer('quiz_completed', {
       recommendation_type: recommendation.isCustom ? 'custom' : 'standard',
