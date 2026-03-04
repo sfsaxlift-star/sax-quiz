@@ -918,7 +918,7 @@
       </div>
       
       <div class="sax-quiz__form-group">
-        <label class="sax-quiz__label" data-i18n="form_phone">Phone</label>
+        <label class="sax-quiz__label" data-i18n="form_phone">Phone <span class="required">*</span></label>
         <div class="sax-quiz__phone-wrapper">
           <select class="sax-quiz__select sax-quiz__phone-code" id="phoneCode">
             <option value="+45">🇩🇰 +45</option>
@@ -937,8 +937,9 @@
             <option value="+358">🇫🇮 +358</option>
             <option value="+420">🇨🇿 +420</option>
           </select>
-          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" placeholder="12345678">
+          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" placeholder="12345678" required>
         </div>
+        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group">
@@ -1376,6 +1377,7 @@ const SaxQuiz = (function() {
     const firstName = document.getElementById('firstName');
     const lastName = document.getElementById('lastName');
     const email = document.getElementById('email');
+    const phoneNumber = document.getElementById('phoneNumber');
     const company = document.getElementById('company');
     const country = document.getElementById('country');
     const consent = document.getElementById('consent');
@@ -1406,6 +1408,14 @@ const SaxQuiz = (function() {
       hideFieldError(email);
     }
     
+    // Phone
+    if (!phoneNumber.value.trim()) {
+      if (showErrors) showFieldError(phoneNumber);
+      isValid = false;
+    } else {
+      hideFieldError(phoneNumber);
+    }
+
     // Company
     if (!company.value.trim()) {
       if (showErrors) showFieldError(company);
