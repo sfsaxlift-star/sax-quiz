@@ -1889,6 +1889,7 @@ Submitted: ${payload.submittedAt}
   function showResult(recommendation) {
     document.getElementById('loadingState').classList.remove('active');
     document.getElementById('resultState').classList.add('active');
+    document.querySelector('.sax-quiz__subtitle').style.display = 'none';
     
     // Update recommendation box
     const badge = document.getElementById('recBadge');
