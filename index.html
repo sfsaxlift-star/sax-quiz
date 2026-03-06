@@ -755,28 +755,18 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="20" width="20" height="2" rx="1"/><rect x="5" y="12" width="14" height="3" rx="1"/><line x1="8" y1="15" x2="10" y2="22"/><line x1="16" y1="15" x2="14" y2="22"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q3_opt2_label">Standard height (up to 1,000mm)</div>
+            <div class="sax-quiz__option-label" data-i18n="q3_opt2_label">Standard working height – Up to 1,500 mm</div>
             <div class="sax-quiz__option-desc" data-i18n="q3_opt2_desc">Typical ergonomic working height</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="high" onclick="SaxQuiz.selectOption(this)">
           <div class="sax-quiz__option-radio"></div>
           <div class="sax-quiz__option-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="20" width="20" height="2" rx="1"/><rect x="5" y="7" width="14" height="3" rx="1"/><line x1="8" y1="10" x2="10" y2="22"/><line x1="16" y1="10" x2="14" y2="22"/></svg>
-          </div>
-          <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q3_opt3_label">High lift (1,000 – 1,800mm)</div>
-            <div class="sax-quiz__option-desc" data-i18n="q3_opt3_desc">Truck loading, elevated work</div>
-          </div>
-        </div>
-        <div class="sax-quiz__option" data-value="extra_high" onclick="SaxQuiz.selectOption(this)">
-          <div class="sax-quiz__option-radio"></div>
-          <div class="sax-quiz__option-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="20" width="20" height="2" rx="1"/><rect x="5" y="4" width="14" height="3" rx="1"/><line x1="8" y1="7" x2="10" y2="22"/><line x1="16" y1="7" x2="14" y2="22"/><path d="M10 4l2-3 2 3"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q3_opt4_label">Extra high lift (over 1,800mm)</div>
-            <div class="sax-quiz__option-desc" data-i18n="q3_opt4_desc">Mezzanine loading, special applications</div>
+            <div class="sax-quiz__option-label" data-i18n="q3_opt3_label">High lift – Above 1,500 mm</div>
+            <div class="sax-quiz__option-desc" data-i18n="q3_opt3_desc">Truck loading, elevated work</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
@@ -1135,12 +1125,10 @@ const SaxQuiz = (function() {
       q3_helper: "From lowest to highest position",
       q3_opt1_label: "Low profile (floor level start)",
       q3_opt1_desc: "Closed height ~80mm, for pallet trucks",
-      q3_opt2_label: "Standard height (up to 1,000mm)",
+      q3_opt2_label: "Standard working height – Up to 1,500 mm",
       q3_opt2_desc: "Typical ergonomic working height",
-      q3_opt3_label: "High lift (1,000 – 1,800mm)",
+      q3_opt3_label: "High lift – Above 1,500 mm",
       q3_opt3_desc: "Truck loading, elevated work",
-      q3_opt4_label: "Extra high lift (over 1,800mm)",
-      q3_opt4_desc: "Mezzanine loading, special applications",
       q3_opt5_desc: "I need help determining the right height",
       q4_title: "What type of lift table do you need?",
       q4_helper: "Power source and installation type",
@@ -1746,10 +1734,9 @@ Submitted: ${payload.submittedAt}
 
   function heightMatches(mm, quizH) {
     if (!mm || quizH === 'not_sure') return true;
-    if (quizH === 'low_profile')  return mm <= 800;
-    if (quizH === 'standard')     return mm > 400 && mm <= 1200;
-    if (quizH === 'high')         return mm > 800 && mm <= 1800;
-    if (quizH === 'extra_high')   return mm > 1800;
+    if (quizH === 'low_profile')  return mm <= 500;
+    if (quizH === 'standard')     return mm > 400 && mm <= 1500;
+    if (quizH === 'high')         return mm > 1500;
     return true;
   }
 
