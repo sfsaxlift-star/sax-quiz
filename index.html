@@ -982,30 +982,6 @@
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
-      <div class="sax-quiz__form-group">
-        <label class="sax-quiz__label" data-i18n="form_country">Country <span class="required">*</span></label>
-        <select class="sax-quiz__select" id="country" required>
-          <option value="">Select country</option>
-          <option value="DK">Denmark</option>
-          <option value="DE">Germany</option>
-          <option value="NL">Netherlands</option>
-          <option value="SE">Sweden</option>
-          <option value="NO">Norway</option>
-          <option value="FR">France</option>
-          <option value="BE">Belgium</option>
-          <option value="PL">Poland</option>
-          <option value="AT">Austria</option>
-          <option value="CH">Switzerland</option>
-          <option value="GB">United Kingdom</option>
-          <option value="IT">Italy</option>
-          <option value="ES">Spain</option>
-          <option value="FI">Finland</option>
-          <option value="CZ">Czech Republic</option>
-          <option value="OTHER">Other</option>
-        </select>
-        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
-      </div>
-      
       <div class="sax-quiz__form-group full-width">
         <label class="sax-quiz__label" data-i18n="form_message">Additional details (optional)</label>
         <textarea class="sax-quiz__textarea" id="message" placeholder="Platform dimensions, special requirements, quantity needed..."></textarea>
@@ -1402,7 +1378,6 @@ const SaxQuiz = (function() {
     const email = document.getElementById('email');
     const phoneNumber = document.getElementById('phoneNumber');
     const company = document.getElementById('company');
-    const country = document.getElementById('country');
     const consent = document.getElementById('consent');
     
     let isValid = true;
@@ -1445,14 +1420,6 @@ const SaxQuiz = (function() {
       isValid = false;
     } else {
       hideFieldError(company);
-    }
-    
-    // Country
-    if (!country.value) {
-      if (showErrors) showFieldError(country);
-      isValid = false;
-    } else {
-      hideFieldError(country);
     }
     
     // Consent
@@ -1499,7 +1466,6 @@ const SaxQuiz = (function() {
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phoneCode').value + document.getElementById('phoneNumber').value.trim(),
       company: document.getElementById('company').value.trim(),
-      country: document.getElementById('country').value,
       message: document.getElementById('message').value.trim(),
       
       // Quiz answers
@@ -1531,7 +1497,6 @@ const SaxQuiz = (function() {
       application: payload.application,
       capacity: payload.capacity,
       timeline: payload.timeline,
-      country: payload.country,
       is_free_email: isFreeEmailUsed
     });
     
@@ -1560,7 +1525,6 @@ const SaxQuiz = (function() {
       formData.append('Email', payload.email);
       formData.append('Phone', payload.phone);
       formData.append('Company', payload.company);
-      formData.append('Country', payload.country);
       formData.append('Message', payload.message || 'N/A');
       formData.append('Application', payload.application);
       formData.append('Capacity', payload.capacity);
@@ -1625,7 +1589,6 @@ Name: ${payload.firstName} ${payload.lastName}
 Email: ${payload.email}
 Phone: ${payload.phone}
 Company: ${payload.company}
-Country: ${payload.country}
 
 QUIZ ANSWERS
 ------------
@@ -1957,19 +1920,6 @@ Submitted: ${payload.submittedAt}
         input.addEventListener('change', () => validateForm(false));
       });
       
-      // Auto-detect country from phone code selection
-      const countryPhoneMap = {
-        '+45': 'DK', '+49': 'DE', '+31': 'NL', '+46': 'SE', '+47': 'NO',
-        '+33': 'FR', '+32': 'BE', '+48': 'PL', '+43': 'AT', '+41': 'CH',
-        '+44': 'GB', '+39': 'IT', '+34': 'ES', '+358': 'FI', '+420': 'CZ'
-      };
-      
-      document.getElementById('phoneCode').addEventListener('change', function() {
-        const countrySelect = document.getElementById('country');
-        if (!countrySelect.value && countryPhoneMap[this.value]) {
-          countrySelect.value = countryPhoneMap[this.value];
-        }
-      });
       
       updateProgress();
       updateNav();
