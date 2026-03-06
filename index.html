@@ -660,7 +660,7 @@
           </div>
           <div class="sax-quiz__option-content">
             <div class="sax-quiz__option-label" data-i18n="q1_opt2_label">Ergonomic Workstation</div>
-            <div class="sax-quiz__option-desc" data-i18n="q1_opt2_desc">Assembly, packaging, inspection work</div>
+            <div class="sax-quiz__option-desc" data-i18n="q1_opt2_desc">Assembly, packaging, ergonomic tasks</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="production_line" onclick="SaxQuiz.selectOption(this)">
@@ -671,16 +671,6 @@
           <div class="sax-quiz__option-content">
             <div class="sax-quiz__option-label" data-i18n="q1_opt3_label">Production Line Integration</div>
             <div class="sax-quiz__option-desc" data-i18n="q1_opt3_desc">Conveyor connection, machine feeding</div>
-          </div>
-        </div>
-        <div class="sax-quiz__option" data-value="vehicle_maintenance" onclick="SaxQuiz.selectOption(this)">
-          <div class="sax-quiz__option-radio"></div>
-          <div class="sax-quiz__option-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l2.5-5h9L19 11"/><rect x="2" y="11" width="20" height="6" rx="1"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M2 14h20"/></svg>
-          </div>
-          <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q1_opt4_label">Vehicle / Equipment Maintenance</div>
-            <div class="sax-quiz__option-desc" data-i18n="q1_opt4_desc">Car lifts, motorcycle lifts, equipment servicing</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="other" onclick="SaxQuiz.selectOption(this)">
@@ -1148,11 +1138,9 @@ const SaxQuiz = (function() {
       q1_opt1_label: "Loading / Unloading",
       q1_opt1_desc: "Dock leveling, truck loading, pallet handling",
       q1_opt2_label: "Ergonomic Workstation",
-      q1_opt2_desc: "Assembly, packaging, inspection work",
+      q1_opt2_desc: "Assembly, packaging, ergonomic tasks",
       q1_opt3_label: "Production Line Integration",
       q1_opt3_desc: "Conveyor connection, machine feeding",
-      q1_opt4_label: "Vehicle / Equipment Maintenance",
-      q1_opt4_desc: "Car lifts, motorcycle lifts, equipment servicing",
       q1_opt5_label: "Other / Custom Application",
       q1_opt5_desc: "Special requirements or not listed above",
       q2_title: "What capacity do you need?",
@@ -1243,8 +1231,6 @@ const SaxQuiz = (function() {
       q1_opt2_desc: "Montage, Verpackung, Prüfarbeiten",
       q1_opt3_label: "Produktionslinien-Integration",
       q1_opt3_desc: "Förderband-Anschluss, Maschinenbeschickung",
-      q1_opt4_label: "Fahrzeug- / Gerätewartung",
-      q1_opt4_desc: "Autohebebühnen, Motorradhebebühnen, Gerätewartung",
       q1_opt5_label: "Andere / Sonderanwendung",
       q1_opt5_desc: "Spezielle Anforderungen",
       btn_back: "Zurück",
