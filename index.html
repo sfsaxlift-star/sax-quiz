@@ -831,8 +831,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20V10l5-4v4l5-4v4l5-4v14H2z"/><line x1="2" y1="20" x2="22" y2="20"/><rect x="14" y="14" width="3" height="6"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q5_opt1_label">Standard indoor (warehouse, factory)</div>
-            <div class="sax-quiz__option-desc" data-i18n="q5_opt1_desc">Painted steel, standard finish</div>
+            <div class="sax-quiz__option-label" data-i18n="q5_opt1_label">Indoor</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt1_desc">Warehouse, factory – painted steel finish</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="wet_washdown" onclick="SaxQuiz.selectOption(this)">
@@ -841,7 +841,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q5_opt2_label">Wet / Washdown environment</div>
+            <div class="sax-quiz__option-label" data-i18n="q5_opt2_label">Stainless Steel – wet/washdown environment</div>
             <div class="sax-quiz__option-desc" data-i18n="q5_opt2_desc">Food, pharma – stainless steel recommended</div>
           </div>
         </div>
@@ -851,8 +851,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q5_opt3_label">Outdoor / Corrosive environment</div>
-            <div class="sax-quiz__option-desc" data-i18n="q5_opt3_desc">Galvanized steel for weather resistance</div>
+            <div class="sax-quiz__option-label" data-i18n="q5_opt3_label">Galvanised Steel – outdoor/corrosive environment</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt3_desc">Galvanised steel for weather and corrosion resistance</div>
           </div>
         </div>
         <div class="sax-quiz__option" data-value="explosive_atex" onclick="SaxQuiz.selectOption(this)">
@@ -865,14 +865,14 @@
             <div class="sax-quiz__option-desc" data-i18n="q5_opt4_desc">Certified for hazardous zones</div>
           </div>
         </div>
-        <div class="sax-quiz__option" data-value="cleanroom" onclick="SaxQuiz.selectOption(this)">
+        <div class="sax-quiz__option" data-value="none" onclick="SaxQuiz.selectOption(this)">
           <div class="sax-quiz__option-radio"></div>
           <div class="sax-quiz__option-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <div class="sax-quiz__option-content">
-            <div class="sax-quiz__option-label" data-i18n="q5_opt5_label">Cleanroom / Hygienic</div>
-            <div class="sax-quiz__option-desc" data-i18n="q5_opt5_desc">Smooth surfaces, easy to clean</div>
+            <div class="sax-quiz__option-label" data-i18n="q5_opt5_label">None of the above</div>
+            <div class="sax-quiz__option-desc" data-i18n="q5_opt5_desc">No special environment requirements</div>
           </div>
         </div>
       </div>
@@ -1119,16 +1119,16 @@ const SaxQuiz = (function() {
       q4_opt4_desc: "I need advice on the best option",
       q5_title: "What's your working environment?",
       q5_helper: "This determines material and finish requirements",
-      q5_opt1_label: "Standard indoor (warehouse, factory)",
-      q5_opt1_desc: "Painted steel, standard finish",
-      q5_opt2_label: "Wet / Washdown environment",
+      q5_opt1_label: "Indoor",
+      q5_opt1_desc: "Warehouse, factory – painted steel finish",
+      q5_opt2_label: "Stainless Steel – wet/washdown environment",
       q5_opt2_desc: "Food, pharma – stainless steel recommended",
-      q5_opt3_label: "Outdoor / Corrosive environment",
-      q5_opt3_desc: "Galvanized steel for weather resistance",
+      q5_opt3_label: "Galvanised Steel – outdoor/corrosive environment",
+      q5_opt3_desc: "Galvanised steel for weather and corrosion resistance",
       q5_opt4_label: "Explosive atmosphere (ATEX)",
       q5_opt4_desc: "Certified for hazardous zones",
-      q5_opt5_label: "Cleanroom / Hygienic",
-      q5_opt5_desc: "Smooth surfaces, easy to clean",
+      q5_opt5_label: "None of the above",
+      q5_opt5_desc: "No special environment requirements",
       q6_title: "When do you need the lift table?",
       q6_helper: "This helps us prioritize your quote",
       q6_opt1_label: "Urgent – Within 2 weeks",
@@ -1239,10 +1239,10 @@ const SaxQuiz = (function() {
     // Environment scoring (special = higher value)
     const envScores = {
       'standard_indoor': 10,
+      'none': 10,
       'wet_washdown': 20,
       'outdoor_corrosive': 15,
       'explosive_atex': 25,
-      'cleanroom': 20
     };
     score += envScores[answers.environment] || 10;
     
@@ -1296,9 +1296,9 @@ const SaxQuiz = (function() {
       
       const materialMap = {
         'standard_indoor': 'Painted Steel',
+        'none': 'Painted Steel',
         'wet_washdown': 'Stainless Steel',
-        'outdoor_corrosive': 'Galvanized Steel',
-        'cleanroom': 'Stainless Steel'
+        'outdoor_corrosive': 'Galvanised Steel',
       };
       
       title = typeMap[answers.type] || 'Standard Lift Table';
@@ -1674,7 +1674,6 @@ Submitted: ${payload.submittedAt}
   // Types not listed here are assumed standard_indoor
   const ENV_TYPES = {
     wet_washdown:      ['Stainless Steel'],
-    cleanroom:         ['Stainless Steel'],
     outdoor_corrosive: ['Galvanised scissor lift tables'],
     explosive_atex:    ['ATEX LIFT TABLES', 'Mobile lift tables - ATEX']
   };
