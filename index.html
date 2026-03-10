@@ -1632,6 +1632,7 @@ const SaxQuiz = (function() {
       // Tracking
       ...urlParams,
       language: language,
+      country: { en: 'United Kingdom', da: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy' }[language] || '',
       quizVersion: '1.0',
       submittedAt: new Date().toISOString(),
       pageUrl: window.location.href
@@ -1686,6 +1687,7 @@ const SaxQuiz = (function() {
       formData.append('UTM_Medium', urlParams.utm_medium);
       formData.append('UTM_Campaign', urlParams.utm_campaign);
       formData.append('GCLID', urlParams.gclid);
+      formData.append('Country', payload.country);
       formData.append('Page_URL', payload.pageUrl);
       formData.append('Submitted_At', payload.submittedAt);
       
