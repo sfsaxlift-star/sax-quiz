@@ -1915,8 +1915,11 @@ Submitted: ${payload.submittedAt}
     },
     
     init: function() {
-      // Always display English (other translations kept for future use)
-      this.changeLanguage('en');
+      // Read ?lang= URL parameter; fall back to English
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const supportedLangs = Object.keys(translations);
+      const lang = supportedLangs.includes(urlLang) ? urlLang : 'en';
+      this.changeLanguage(lang);
 
       // Set up form validation listeners
       const formInputs = document.querySelectorAll('#contactForm input, #contactForm select');
