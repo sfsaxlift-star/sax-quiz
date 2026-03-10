@@ -935,13 +935,13 @@
     <div class="sax-quiz__form-grid">
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_name">Full Name</span> <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="fullName" placeholder="Your Name" required>
+        <input type="text" class="sax-quiz__input" id="fullName" data-i18n="placeholder_name" placeholder="Your Name" required>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_email">Work Email</span> <span class="required">*</span></label>
-        <input type="email" class="sax-quiz__input" id="email" placeholder="Your Work Email" required>
+        <input type="email" class="sax-quiz__input" id="email" data-i18n="placeholder_email" placeholder="Your Work Email" required>
         <span class="sax-quiz__error-msg" id="emailError" data-i18n="error_email">Please enter a valid work email</span>
       </div>
       
@@ -972,13 +972,13 @@
       
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_company">Company</span> <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="company" placeholder="Company" required>
+        <input type="text" class="sax-quiz__input" id="company" data-i18n="placeholder_company" placeholder="Company" required>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group full-width">
         <label class="sax-quiz__label" data-i18n="form_message">Additional details (optional)</label>
-        <textarea class="sax-quiz__textarea" id="message" placeholder="Platform dimensions, special requirements, quantity needed..."></textarea>
+        <textarea class="sax-quiz__textarea" id="message" data-i18n="placeholder_message" placeholder="Platform dimensions, special requirements, quantity needed..."></textarea>
       </div>
       
       <div class="sax-quiz__form-group full-width">
@@ -1115,6 +1115,10 @@ const SaxQuiz = (function() {
       form_email: "Work Email",
       form_phone: "Phone",
       form_company: "Company",
+      placeholder_name: "Your Name",
+      placeholder_email: "Your Work Email",
+      placeholder_company: "Company",
+      placeholder_message: "Platform dimensions, special requirements, quantity needed...",
       form_country: "Country",
       form_message: "Additional details (optional)",
       form_consent: "I agree to receive a quote and product information from Sax Lift. View our <a href='/privacy-policy' target='_blank'>Privacy Policy</a>.",
@@ -1147,6 +1151,10 @@ const SaxQuiz = (function() {
       form_title: "Erhalten Sie Ihr persönliches Angebot",
       form_subtitle: "Füllen Sie Ihre Daten aus und wir senden Ihnen die Empfehlung mit Preisen",
       form_name: "Vollständiger Name",
+      placeholder_name: "Ihr Name",
+      placeholder_email: "Ihre geschäftliche E-Mail",
+      placeholder_company: "Unternehmen",
+      placeholder_message: "Plattformabmessungen, besondere Anforderungen, benötigte Menge...",
       btn_back: "Zurück",
       btn_next: "Weiter",
       btn_submit: "Angebot anfordern",
@@ -1165,6 +1173,10 @@ const SaxQuiz = (function() {
       form_title: "Få dit personlige tilbud",
       form_subtitle: "Udfyld dine oplysninger, så sender vi din anbefaling med priser",
       form_name: "Fulde navn",
+      placeholder_name: "Dit navn",
+      placeholder_email: "Din arbejds-e-mail",
+      placeholder_company: "Virksomhed",
+      placeholder_message: "Platformsmål, særlige krav, antal enheder...",
       btn_back: "Tilbage",
       btn_next: "Næste",
       btn_submit: "Få mit tilbud",
@@ -1233,6 +1245,10 @@ const SaxQuiz = (function() {
       form_title: "Ottieni il Tuo Preventivo Personalizzato",
       form_subtitle: "Compila i tuoi dati e ti invieremo la raccomandazione con i prezzi",
       form_name: "Nome completo",
+      placeholder_name: "Il tuo nome",
+      placeholder_email: "La tua email aziendale",
+      placeholder_company: "Azienda",
+      placeholder_message: "Dimensioni piattaforma, requisiti speciali, quantità necessaria...",
       form_email: "Email aziendale",
       form_phone: "Telefono",
       form_company: "Azienda",
@@ -1314,6 +1330,10 @@ const SaxQuiz = (function() {
       form_title: "Obtenez Votre Devis Personnalisé",
       form_subtitle: "Remplissez vos coordonnées et nous vous enverrons votre recommandation avec les tarifs",
       form_name: "Nom complet",
+      placeholder_name: "Votre nom",
+      placeholder_email: "Votre email professionnel",
+      placeholder_company: "Entreprise",
+      placeholder_message: "Dimensions de la plateforme, exigences spéciales, quantité nécessaire...",
       form_email: "Email professionnel",
       form_phone: "Téléphone",
       form_company: "Entreprise",
