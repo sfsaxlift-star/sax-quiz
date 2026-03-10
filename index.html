@@ -933,15 +933,9 @@
     <p class="sax-quiz__question-helper" data-i18n="form_subtitle">Fill in your details and we'll send your recommendation with pricing</p>
     
     <div class="sax-quiz__form-grid">
-      <div class="sax-quiz__form-group">
-        <label class="sax-quiz__label" data-i18n="form_firstname">First Name <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="firstName" required>
-        <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
-      </div>
-      
-      <div class="sax-quiz__form-group">
-        <label class="sax-quiz__label" data-i18n="form_lastname">Last Name <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="lastName" required>
+      <div class="sax-quiz__form-group full-width">
+        <label class="sax-quiz__label" data-i18n="form_name">Full Name <span class="required">*</span></label>
+        <input type="text" class="sax-quiz__input" id="fullName" required>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
@@ -1117,8 +1111,7 @@ const SaxQuiz = (function() {
       q6_opt4_desc: "No immediate need, gathering information",
       form_title: "Get Your Personalized Quote",
       form_subtitle: "Fill in your details and we'll send your recommendation with pricing",
-      form_firstname: "First Name",
-      form_lastname: "Last Name",
+      form_name: "Full Name",
       form_email: "Work Email",
       form_phone: "Phone",
       form_company: "Company",
@@ -1151,6 +1144,7 @@ const SaxQuiz = (function() {
       q1_opt3_desc: "Förderband-Anschluss, Maschinenbeschickung",
       q1_opt5_label: "Andere / Sonderanwendung",
       q1_opt5_desc: "Spezielle Anforderungen",
+      form_name: "Vollständiger Name",
       btn_back: "Zurück",
       btn_next: "Weiter",
       btn_submit: "Angebot anfordern",
@@ -1166,6 +1160,7 @@ const SaxQuiz = (function() {
       q1_opt1_desc: "Rampeudligning, lastbillæsning, pallehåndtering",
       q1_opt2_label: "Ergonomisk arbejdsstation",
       q1_opt2_desc: "Montage, pakning, kontrolarbejde",
+      form_name: "Fulde navn",
       btn_back: "Tilbage",
       btn_next: "Næste",
       btn_submit: "Få mit tilbud",
@@ -1233,8 +1228,7 @@ const SaxQuiz = (function() {
       q6_opt4_desc: "Nessuna necessità immediata, raccolta informazioni",
       form_title: "Ottieni il Tuo Preventivo Personalizzato",
       form_subtitle: "Compila i tuoi dati e ti invieremo la raccomandazione con i prezzi",
-      form_firstname: "Nome",
-      form_lastname: "Cognome",
+      form_name: "Nome completo",
       form_email: "Email aziendale",
       form_phone: "Telefono",
       form_company: "Azienda",
@@ -1315,8 +1309,7 @@ const SaxQuiz = (function() {
       q6_opt4_desc: "Pas de besoin immédiat, collecte d'informations",
       form_title: "Obtenez Votre Devis Personnalisé",
       form_subtitle: "Remplissez vos coordonnées et nous vous enverrons votre recommandation avec les tarifs",
-      form_firstname: "Prénom",
-      form_lastname: "Nom",
+      form_name: "Nom complet",
       form_email: "Email professionnel",
       form_phone: "Téléphone",
       form_company: "Entreprise",
@@ -1537,8 +1530,7 @@ const SaxQuiz = (function() {
 
   // Validate form
   function validateForm(showErrors = true) {
-    const firstName = document.getElementById('firstName');
-    const lastName = document.getElementById('lastName');
+    const fullName = document.getElementById('fullName');
     const email = document.getElementById('email');
     const phoneNumber = document.getElementById('phoneNumber');
     const company = document.getElementById('company');
@@ -1546,20 +1538,12 @@ const SaxQuiz = (function() {
     
     let isValid = true;
     
-    // First name
-    if (!firstName.value.trim()) {
-      if (showErrors) showFieldError(firstName);
+    // Full name
+    if (!fullName.value.trim()) {
+      if (showErrors) showFieldError(fullName);
       isValid = false;
     } else {
-      hideFieldError(firstName);
-    }
-    
-    // Last name
-    if (!lastName.value.trim()) {
-      if (showErrors) showFieldError(lastName);
-      isValid = false;
-    } else {
-      hideFieldError(lastName);
+      hideFieldError(fullName);
     }
     
     // Email
@@ -1625,8 +1609,7 @@ const SaxQuiz = (function() {
     
     const payload = {
       // Contact info
-      firstName: document.getElementById('firstName').value.trim(),
-      lastName: document.getElementById('lastName').value.trim(),
+      fullName: document.getElementById('fullName').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phoneCode').value + document.getElementById('phoneNumber').value.trim(),
       company: document.getElementById('company').value.trim(),
@@ -1680,12 +1663,12 @@ const SaxQuiz = (function() {
       const formData = new FormData();
       formData.append('access_key', '5820f2de-c2e5-4506-a432-722b6d0e69f6');
       formData.append('to', 'sf@saxlift.dk');
-      formData.append('subject', `[Sax Lift Quiz] New Lead: ${payload.firstName} ${payload.lastName} - ${payload.company} (Score: ${leadScore})`);
+      formData.append('subject', `[Sax Lift Quiz] New Lead: ${payload.fullName} - ${payload.company} (Score: ${leadScore})`);
       formData.append('from_name', 'Sax Lift Quiz');
       formData.append('replyto', payload.email);
       
       // All form fields
-      formData.append('Name', `${payload.firstName} ${payload.lastName}`);
+      formData.append('Name', payload.fullName);
       formData.append('Email', payload.email);
       formData.append('Phone', payload.phone);
       formData.append('Company', payload.company);
@@ -1725,7 +1708,7 @@ const SaxQuiz = (function() {
       // =================================================================
       // FALLBACK: Open email client with pre-filled data
       // =================================================================
-      const mailtoLink = `mailto:sf@saxlift.dk?subject=${encodeURIComponent(`[Sax Lift Quiz] New Lead: ${payload.firstName} ${payload.lastName} - ${payload.company}`)}&body=${encodeURIComponent(emailBody)}`;
+      const mailtoLink = `mailto:sf@saxlift.dk?subject=${encodeURIComponent(`[Sax Lift Quiz] New Lead: ${payload.fullName} - ${payload.company}`)}&body=${encodeURIComponent(emailBody)}`;
       
       // Try to send via mailto as backup
       window.location.href = mailtoLink;
@@ -1749,7 +1732,7 @@ NEW LEAD FROM SAX LIFT QUIZ
 
 CONTACT INFORMATION
 -------------------
-Name: ${payload.firstName} ${payload.lastName}
+Name: ${payload.fullName}
 Email: ${payload.email}
 Phone: ${payload.phone}
 Company: ${payload.company}
