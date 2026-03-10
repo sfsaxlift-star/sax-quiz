@@ -2086,7 +2086,7 @@ Submitted: ${payload.submittedAt}
       this.changeLanguage(lang);
 
       // Pre-select phone country code based on language
-      const langPhoneCode = { da: '+45', de: '+49', fr: '+33', it: '+39' };
+      const langPhoneCode = { en: '+44', da: '+45', de: '+49', fr: '+33', it: '+39' };
       if (langPhoneCode[lang]) {
         document.getElementById('phoneCode').value = langPhoneCode[lang];
       }
