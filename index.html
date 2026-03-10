@@ -2085,6 +2085,12 @@ Submitted: ${payload.submittedAt}
       const lang = supportedLangs.includes(urlLang) ? urlLang : 'en';
       this.changeLanguage(lang);
 
+      // Pre-select phone country code based on language
+      const langPhoneCode = { da: '+45', de: '+49', fr: '+33', it: '+39' };
+      if (langPhoneCode[lang]) {
+        document.getElementById('phoneCode').value = langPhoneCode[lang];
+      }
+
       // Set up form validation listeners
       const formInputs = document.querySelectorAll('#contactForm input, #contactForm select');
       formInputs.forEach(input => {
