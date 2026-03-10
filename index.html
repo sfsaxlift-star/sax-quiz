@@ -965,7 +965,7 @@
             <option value="+358">🇫🇮 +358</option>
             <option value="+420">🇨🇿 +420</option>
           </select>
-          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" placeholder="12345678" required>
+          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" data-i18n="placeholder_phone" placeholder="12345678" required>
         </div>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
@@ -1118,6 +1118,7 @@ const SaxQuiz = (function() {
       placeholder_name: "Your Name",
       placeholder_email: "Your Work Email",
       placeholder_company: "Company",
+      placeholder_phone: "07700 900000",
       placeholder_message: "Platform dimensions, special requirements, quantity needed...",
       form_country: "Country",
       form_message: "Additional details (optional)",
@@ -1154,6 +1155,7 @@ const SaxQuiz = (function() {
       placeholder_name: "Ihr Name",
       placeholder_email: "Ihre geschäftliche E-Mail",
       placeholder_company: "Unternehmen",
+      placeholder_phone: "030 12345678",
       placeholder_message: "Plattformabmessungen, besondere Anforderungen, benötigte Menge...",
       btn_back: "Zurück",
       btn_next: "Weiter",
@@ -1176,6 +1178,7 @@ const SaxQuiz = (function() {
       placeholder_name: "Dit navn",
       placeholder_email: "Din arbejds-e-mail",
       placeholder_company: "Virksomhed",
+      placeholder_phone: "12 34 56 78",
       placeholder_message: "Platformsmål, særlige krav, antal enheder...",
       btn_back: "Tilbage",
       btn_next: "Næste",
@@ -1248,6 +1251,7 @@ const SaxQuiz = (function() {
       placeholder_name: "Il tuo nome",
       placeholder_email: "La tua email aziendale",
       placeholder_company: "Azienda",
+      placeholder_phone: "02 1234 5678",
       placeholder_message: "Dimensioni piattaforma, requisiti speciali, quantità necessaria...",
       form_email: "Email aziendale",
       form_phone: "Telefono",
@@ -1334,6 +1338,7 @@ const SaxQuiz = (function() {
       placeholder_name: "Votre nom",
       placeholder_email: "Votre email professionnel",
       placeholder_company: "Entreprise",
+      placeholder_phone: "01 23 45 67 89",
       placeholder_message: "Dimensions de la plateforme, exigences spéciales, quantité nécessaire...",
       form_email: "Email professionnel",
       form_phone: "Téléphone",
