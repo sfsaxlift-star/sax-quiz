@@ -1832,8 +1832,13 @@ Submitted: ${payload.submittedAt}
       });
       
       updateNav();
+
+      // Auto-advance to next question after a brief delay
+      if (currentStep <= totalQuestions) {
+        setTimeout(() => SaxQuiz.nextStep(), 350);
+      }
     },
-    
+
     nextStep: function() {
       if (currentStep <= totalQuestions) {
         currentStep++;
