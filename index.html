@@ -2064,11 +2064,23 @@ Submitted: ${payload.submittedAt}
     },
     
     init: function() {
-      // Read ?lang= URL parameter; fall back to English
       // Map country codes to language codes (e.g. dk → da, gb/uk → en)
       const countryToLang = { dk: 'da', gb: 'en', uk: 'en' };
+
+      // 1. Try ?lang= parameter on the quiz URL
       const rawLang = (new URLSearchParams(window.location.search).get('lang') || '').toLowerCase();
-      const urlLang = countryToLang[rawLang] || rawLang;
+      let urlLang = countryToLang[rawLang] || rawLang;
+
+      // 2. If no ?lang=, detect from referrer path (e.g. saxlift.com/dk/...)
+      if (!urlLang) {
+        const referrerPath = document.referrer ? new URL(document.referrer).pathname : '';
+        const pathMatch = referrerPath.match(/^\/([a-z]{2})(\/|$)/i);
+        if (pathMatch) {
+          const pathCode = pathMatch[1].toLowerCase();
+          urlLang = countryToLang[pathCode] || pathCode;
+        }
+      }
+
       const supportedLangs = Object.keys(translations);
       const lang = supportedLangs.includes(urlLang) ? urlLang : 'en';
       this.changeLanguage(lang);
