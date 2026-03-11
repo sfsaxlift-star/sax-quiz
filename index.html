@@ -1010,16 +1010,6 @@
     <h3 class="sax-quiz__result-title" data-i18n="result_title">Thank You!</h3>
     <p class="sax-quiz__result-text" data-i18n="result_text">We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.</p>
     
-    <div class="sax-quiz__recommendation" id="recommendationBox">
-      <span class="sax-quiz__rec-badge" id="recBadge">Recommended</span>
-      <h4 class="sax-quiz__rec-title" id="recTitle">Standard Electric Lift Table</h4>
-      <p class="sax-quiz__rec-specs" id="recSpecs">Based on your requirements</p>
-      <ul class="sax-quiz__rec-features" id="recFeatures">
-        <li>Feature 1</li>
-        <li>Feature 2</li>
-      </ul>
-    </div>
-
     <div id="productMatches" class="sax-quiz__products" style="display:none;">
       <p class="sax-quiz__products-title">Matching Products From Our Range</p>
       <div class="sax-quiz__product-cards" id="productCards"></div>
@@ -1334,13 +1324,13 @@ const SaxQuiz = (function() {
       q2_opt1_label: "Jusqu'à 500 kg",
       form_title: "Obtenez Votre Devis Personnalisé",
       form_subtitle: "Remplissez vos coordonnées et nous vous enverrons votre recommandation avec les tarifs",
-      form_name: "Nom complet",
+      form_name: "Nom",
       placeholder_name: "Votre nom",
-      placeholder_email: "Votre email professionnel",
+      placeholder_email: "Votre email",
       placeholder_company: "Entreprise",
       placeholder_phone: "01 23 45 67 89",
       placeholder_message: "Dimensions de la plateforme, exigences spéciales, quantité nécessaire...",
-      form_email: "Email professionnel",
+      form_email: "Email",
       form_phone: "Téléphone",
       form_company: "Entreprise",
       form_country: "Pays",
@@ -1953,19 +1943,6 @@ Submitted: ${payload.submittedAt}
     document.getElementById('loadingState').classList.remove('active');
     document.getElementById('resultState').classList.add('active');
     document.querySelector('.sax-quiz__subtitle').style.display = 'none';
-    
-    // Update recommendation box
-    const badge = document.getElementById('recBadge');
-    badge.textContent = recommendation.isCustom 
-      ? (translations[language]?.rec_custom || 'Custom Solution')
-      : (translations[language]?.rec_in_stock || 'In Stock – Fast Delivery');
-    badge.classList.toggle('custom', recommendation.isCustom);
-    
-    document.getElementById('recTitle').textContent = recommendation.title;
-    document.getElementById('recSpecs').textContent = recommendation.specs;
-    
-    const featuresList = document.getElementById('recFeatures');
-    featuresList.innerHTML = recommendation.features.map(f => `<li>${f}</li>`).join('');
     
     // Load live product matches from feed
     loadProductRecommendations();
