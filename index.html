@@ -935,13 +935,13 @@
     <div class="sax-quiz__form-grid">
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_name">Full Name</span> <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="fullName" data-i18n="placeholder_name" placeholder="Your Name" required>
+        <input type="text" class="sax-quiz__input" id="fullName" data-i18n="placeholder_name" placeholder="Your Name" maxlength="100" required>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_email">Work Email</span> <span class="required">*</span></label>
-        <input type="email" class="sax-quiz__input" id="email" data-i18n="placeholder_email" placeholder="Your Work Email" required>
+        <input type="email" class="sax-quiz__input" id="email" data-i18n="placeholder_email" placeholder="Your Work Email" maxlength="254" required>
         <span class="sax-quiz__error-msg" id="emailError" data-i18n="error_email">Please enter a valid work email</span>
       </div>
       
@@ -965,20 +965,20 @@
             <option value="+358">🇫🇮 +358</option>
             <option value="+420">🇨🇿 +420</option>
           </select>
-          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" data-i18n="placeholder_phone" placeholder="12345678">
+          <input type="tel" class="sax-quiz__input sax-quiz__phone-number" id="phoneNumber" data-i18n="placeholder_phone" placeholder="12345678" maxlength="20">
         </div>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group">
         <label class="sax-quiz__label"><span data-i18n="form_company">Company</span> <span class="required">*</span></label>
-        <input type="text" class="sax-quiz__input" id="company" data-i18n="placeholder_company" placeholder="Company" required>
+        <input type="text" class="sax-quiz__input" id="company" data-i18n="placeholder_company" placeholder="Company" maxlength="100" required>
         <span class="sax-quiz__error-msg" data-i18n="error_required">This field is required</span>
       </div>
       
       <div class="sax-quiz__form-group full-width">
         <label class="sax-quiz__label" data-i18n="form_message">Additional details (optional)</label>
-        <textarea class="sax-quiz__textarea" id="message" data-i18n="placeholder_message" placeholder="Platform dimensions, special requirements, quantity needed..."></textarea>
+        <textarea class="sax-quiz__textarea" id="message" data-i18n="placeholder_message" placeholder="Platform dimensions, special requirements, quantity needed..." maxlength="1000"></textarea>
       </div>
       
       <div class="sax-quiz__form-group full-width">
@@ -1355,14 +1355,15 @@ const SaxQuiz = (function() {
   // Get URL parameters (UTM, gclid)
   function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
+    const sanitize = val => (val || '').replace(/[^a-zA-Z0-9\-_. ]/g, '').slice(0, 100);
     return {
-      utm_source: params.get('utm_source') || '',
-      utm_medium: params.get('utm_medium') || '',
-      utm_campaign: params.get('utm_campaign') || '',
-      utm_term: params.get('utm_term') || '',
-      utm_content: params.get('utm_content') || '',
-      gclid: params.get('gclid') || '',
-      fbclid: params.get('fbclid') || ''
+      utm_source:   sanitize(params.get('utm_source')),
+      utm_medium:   sanitize(params.get('utm_medium')),
+      utm_campaign: sanitize(params.get('utm_campaign')),
+      utm_term:     sanitize(params.get('utm_term')),
+      utm_content:  sanitize(params.get('utm_content')),
+      gclid:        sanitize(params.get('gclid')),
+      fbclid:       sanitize(params.get('fbclid'))
     };
   }
 
@@ -1919,19 +1920,46 @@ Submitted: ${payload.submittedAt}
 
       if (!top.length) { container.style.display = 'none'; return; }
 
-      cards.innerHTML = top.map(p => `
-        <div class="sax-quiz__product-card">
-          <img src="${p.image}" alt="${p.title}" loading="lazy" onerror="this.style.display='none'">
-          <div class="sax-quiz__product-card-body">
-            <div class="sax-quiz__product-card-title">${p.title}</div>
-            <div class="sax-quiz__product-card-price">${p.price}</div>
-            <div class="sax-quiz__product-card-stock ${p.availability === 'in stock' ? 'in-stock' : 'out-stock'}">
-              ${p.availability === 'in stock' ? '● In Stock' : '○ Lead time applies'}
-            </div>
-            <a href="${p.link}" target="_blank" rel="noopener" class="sax-quiz__product-card-btn">View Product →</a>
-          </div>
-        </div>
-      `).join('');
+      cards.innerHTML = '';
+      top.forEach(p => {
+        const safeLink = /^https?:\/\//i.test(p.link) ? p.link : '#';
+        const isInStock = p.availability === 'in stock';
+
+        const card = document.createElement('div');
+        card.className = 'sax-quiz__product-card';
+
+        const img = document.createElement('img');
+        img.src = p.image;
+        img.alt = p.title;
+        img.loading = 'lazy';
+        img.onerror = function(){ this.style.display = 'none'; };
+
+        const body = document.createElement('div');
+        body.className = 'sax-quiz__product-card-body';
+
+        const title = document.createElement('div');
+        title.className = 'sax-quiz__product-card-title';
+        title.textContent = p.title;
+
+        const price = document.createElement('div');
+        price.className = 'sax-quiz__product-card-price';
+        price.textContent = p.price;
+
+        const stock = document.createElement('div');
+        stock.className = 'sax-quiz__product-card-stock ' + (isInStock ? 'in-stock' : 'out-stock');
+        stock.textContent = isInStock ? '● In Stock' : '○ Lead time applies';
+
+        const btn = document.createElement('a');
+        btn.href = safeLink;
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
+        btn.className = 'sax-quiz__product-card-btn';
+        btn.textContent = 'View Product →';
+
+        body.append(title, price, stock, btn);
+        card.append(img, body);
+        cards.appendChild(card);
+      });
     } catch {
       container.style.display = 'none';
     }
@@ -2113,6 +2141,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script async src="https://cdn.jsdelivr.net/npm/@iframe-resizer/child@5.5.9"></script>
+<script async src="https://cdn.jsdelivr.net/npm/@iframe-resizer/child@5.5.9" integrity="sha384-K/olpoX3ynOpS2ibjf3Wi1NA/uX2rdzn7I6U/fbmWEy1Mmcn0Q4lTCce8nmHVAK/" crossorigin="anonymous"></script>
 </body>
 </html>
