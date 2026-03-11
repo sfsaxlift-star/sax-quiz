@@ -807,6 +807,16 @@
             <div class="sax-quiz__option-desc" data-i18n="q4_opt2_desc">On wheels, can be moved around facility</div>
           </div>
         </div>
+        <div class="sax-quiz__option" data-value="pit_mounted" onclick="SaxQuiz.selectOption(this)">
+          <div class="sax-quiz__option-radio"></div>
+          <div class="sax-quiz__option-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="2.5" rx="0.5"/><rect x="5" y="13" width="14" height="2.5" rx="0.5"/><line x1="9" y1="5.5" x2="9" y2="13"/><line x1="15" y1="5.5" x2="15" y2="13"/><line x1="12" y1="9" x2="9" y2="13"/><line x1="12" y1="9" x2="15" y2="13"/><line x1="5" y1="15.5" x2="5" y2="21"/><line x1="19" y1="15.5" x2="19" y2="21"/><line x1="2" y1="21" x2="22" y2="21"/></svg>
+          </div>
+          <div class="sax-quiz__option-content">
+            <div class="sax-quiz__option-label" data-i18n="q4_opt3_label">Pit-mounted</div>
+            <div class="sax-quiz__option-desc" data-i18n="q4_opt3_desc">Recessed into floor, platform flush with ground when lowered</div>
+          </div>
+        </div>
         <div class="sax-quiz__option" data-value="not_sure" onclick="SaxQuiz.selectOption(this)">
           <div class="sax-quiz__option-radio"></div>
           <div class="sax-quiz__option-icon">
@@ -1076,6 +1086,8 @@ const SaxQuiz = (function() {
       q4_opt1_desc: "Fixed installation",
       q4_opt2_label: "Mobile",
       q4_opt2_desc: "On wheels, can be moved around facility",
+      q4_opt3_label: "Pit-mounted",
+      q4_opt3_desc: "Recessed into floor, platform flush with ground when lowered",
       q4_opt4_desc: "I need advice on the best option",
       q5_title: "What's your working environment?",
       q5_helper: "This determines material and finish requirements",
@@ -1151,6 +1163,8 @@ const SaxQuiz = (function() {
       btn_next: "Weiter",
       btn_submit: "Angebot anfordern",
       not_sure: "Noch nicht sicher",
+      q4_opt3_label: "Grubenaufstellung",
+      q4_opt3_desc: "In den Boden eingelassen, Plattform bündig mit dem Boden",
       // Add more German translations as needed
     },
     da: {
@@ -1169,11 +1183,13 @@ const SaxQuiz = (function() {
       placeholder_email: "Din arbejds-e-mail",
       placeholder_company: "Virksomhed",
       placeholder_phone: "12 34 56 78",
-      placeholder_message: "Platformsmål, særlige krav, antal enheder...",
+      placeholder_message: "Platformsmål, særlige krav, antal løfteborde...",
       btn_back: "Tilbage",
       btn_next: "Næste",
       btn_submit: "Få mit tilbud",
       not_sure: "Ikke sikker endnu",
+      q4_opt3_label: "Nedgravet",
+      q4_opt3_desc: "Sænket ned i gulvet, platform i niveau med gulvet",
       // Add more Danish translations as needed
     },
     it: {
@@ -1212,6 +1228,8 @@ const SaxQuiz = (function() {
       q4_opt1_desc: "Installazione fissa",
       q4_opt2_label: "Mobile",
       q4_opt2_desc: "Su ruote, può essere spostato nella struttura",
+      q4_opt3_label: "Installazione a fossa",
+      q4_opt3_desc: "Incassato nel pavimento, piattaforma a livello del suolo",
       q4_opt4_desc: "Ho bisogno di consigli sull'opzione migliore",
       q5_title: "Qual è il tuo ambiente di lavoro?",
       q5_helper: "Questo determina i requisiti di materiale e finitura",
@@ -1298,6 +1316,8 @@ const SaxQuiz = (function() {
       q4_opt1_desc: "Installation fixe",
       q4_opt2_label: "Mobile",
       q4_opt2_desc: "Sur roues, peut être déplacé dans l'installation",
+      q4_opt3_label: "Encastré en fosse",
+      q4_opt3_desc: "Encastré dans le sol, plateforme au ras du sol",
       q4_opt4_desc: "J'ai besoin de conseils sur la meilleure option",
       q5_title: "Quel est votre environnement de travail ?",
       q5_helper: "Cela détermine les exigences de matériau et de finition",
@@ -1443,9 +1463,10 @@ const SaxQuiz = (function() {
     } else {
       // Build recommendation based on answers
       const typeMap = {
-        'stationary': 'Stationary Lift Table',
-        'mobile':     'Mobile Lift Table',
-        'not_sure':   'Lift Table'
+        'stationary':  'Stationary Lift Table',
+        'mobile':      'Mobile Lift Table',
+        'pit_mounted': 'Pit-mounted Lift Table',
+        'not_sure':    'Lift Table'
       };
       
       const materialMap = {
