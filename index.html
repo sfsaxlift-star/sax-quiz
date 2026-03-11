@@ -623,7 +623,7 @@
 
   <!-- Header -->
   <div class="sax-quiz__header">
-<p class="sax-quiz__subtitle" data-i18n="subtitle">Answer 6 quick questions to get a personalized recommendation</p>
+<p class="sax-quiz__subtitle" data-i18n="subtitle">Answer 6 quick questions to get a personalised recommendation</p>
   </div>
 
   <!-- Progress Bar -->
@@ -881,7 +881,7 @@
     <!-- Q6: Timeline -->
     <div class="sax-quiz__question" data-question="6">
       <h3 class="sax-quiz__question-title" data-i18n="q6_title">When do you need the lift table?</h3>
-      <p class="sax-quiz__question-helper" data-i18n="q6_helper">This helps us prioritize your quote</p>
+      <p class="sax-quiz__question-helper" data-i18n="q6_helper">This helps us prioritise your quote</p>
       <div class="sax-quiz__options">
         <div class="sax-quiz__option" data-value="urgent" onclick="SaxQuiz.selectOption(this)">
           <div class="sax-quiz__option-radio"></div>
@@ -1053,7 +1053,7 @@ const SaxQuiz = (function() {
       q1_opt5_desc: "Special requirements or not listed above",
       q2_title: "What capacity do you need?",
       q2_helper: "Maximum weight the lift table must handle",
-      q2_opt1_desc: "Light loads, small packages",
+      q2_opt1_desc: "Small packages, light loads",
       q2_opt2_desc: "Standard pallets, medium loads",
       q2_opt3_desc: "Heavy pallets, industrial use",
       q2_opt4_desc: "Heavy-duty industrial applications",
@@ -1330,7 +1330,7 @@ const SaxQuiz = (function() {
       placeholder_company: "Entreprise",
       placeholder_phone: "01 23 45 67 89",
       placeholder_message: "Dimensions de la plateforme, exigences spéciales, quantité nécessaire...",
-      form_email: "Email",
+      form_email: "Email1",
       form_phone: "Téléphone",
       form_company: "Entreprise",
       form_country: "Pays",
@@ -1520,13 +1520,14 @@ const SaxQuiz = (function() {
     // Back button
     backBtn.style.display = currentStep > 1 ? 'block' : 'none';
     
-    // Next button text
+    // Hide next button during quiz questions — auto-advance handles navigation
+    nextBtn.style.display = currentStep > totalQuestions ? 'block' : 'none';
+
+    // Next button text (form step only)
     if (currentStep > totalQuestions) {
       nextBtnText.textContent = translations[language]?.btn_submit || 'Get My Quote';
-    } else {
-      nextBtnText.textContent = translations[language]?.btn_next || 'Next';
     }
-    
+
     // Enable/disable based on selection
     if (currentStep <= totalQuestions) {
       const currentAnswer = answers[`q${currentStep}`];
