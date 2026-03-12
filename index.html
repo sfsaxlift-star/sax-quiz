@@ -1673,6 +1673,8 @@ const SaxQuiz = (function() {
       isCustomSolution: recommendation.isCustom,
       isFreeEmail: isFreeEmailUsed,
       recommendedProduct: recommendation.title,
+      recommendedSpecs: recommendation.specs,
+      recommendedFeatures: recommendation.features.join(', '),
       
       // Tracking
       ...urlParams,
@@ -1701,6 +1703,20 @@ const SaxQuiz = (function() {
     // Format email body
     const emailBody = formatEmailBody(payload, recommendation);
     
+    // Fetch matching products from XML feed and include in payload
+    try {
+      const topProducts = await fetchTopProducts();
+      payload.matchedProducts = topProducts.map(p => ({
+        title:        p.title,
+        link:         p.link,
+        image:        p.image,
+        price:        p.price,
+        availability: p.availability
+      }));
+    } catch(e) {
+      payload.matchedProducts = [];
+    }
+
     try {
       // =================================================================
       // POST to n8n webhook
@@ -1861,6 +1877,39 @@ Submitted: ${payload.submittedAt}
     return score;
   }
 
+  async function fetchTopProducts() {
+    let xmlText;
+    try {
+      const res = await fetch(FEED_URL);
+      if (!res.ok) throw new Error('direct fetch failed');
+      xmlText = await res.text();
+    } catch {
+      const res = await fetch(CORS_PROXY + encodeURIComponent(FEED_URL));
+      const json = await res.json();
+      xmlText = json.contents;
+    }
+
+    const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+    const g = (el, tag) => el.getElementsByTagNameNS(G_NS, tag)[0]?.textContent?.trim() || '';
+
+    const products = [...xml.querySelectorAll('item')].map(item => ({
+      title:        g(item, 'title'),
+      link:         g(item, 'link'),
+      image:        g(item, 'image_link'),
+      price:        g(item, 'price'),
+      availability: g(item, 'availability'),
+      type:         g(item, 'product_type'),
+      capacityKg:   parseCapacity(g(item, 'title')),
+      heightMm:     parseHeight(g(item, 'product_height'))
+    })).filter(p => p.type !== 'Accessories' && p.link);
+
+    return products
+      .map(p => ({ ...p, score: scoreProduct(p) }))
+      .filter(p => p.score >= 5)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  }
+
   async function loadProductRecommendations() {
     const container = document.getElementById('productMatches');
     const cards = document.getElementById('productCards');
@@ -1868,36 +1917,7 @@ Submitted: ${payload.submittedAt}
     cards.innerHTML = '<p class="sax-quiz__products-loading">Finding matching products…</p>';
 
     try {
-      let xmlText;
-      try {
-        const res = await fetch(FEED_URL);
-        if (!res.ok) throw new Error('direct fetch failed');
-        xmlText = await res.text();
-      } catch {
-        const res = await fetch(CORS_PROXY + encodeURIComponent(FEED_URL));
-        const json = await res.json();
-        xmlText = json.contents;
-      }
-
-      const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const g = (el, tag) => el.getElementsByTagNameNS(G_NS, tag)[0]?.textContent?.trim() || '';
-
-      const products = [...xml.querySelectorAll('item')].map(item => ({
-        title:        g(item, 'title'),
-        link:         g(item, 'link'),
-        image:        g(item, 'image_link'),
-        price:        g(item, 'price'),
-        availability: g(item, 'availability'),
-        type:         g(item, 'product_type'),
-        capacityKg:   parseCapacity(g(item, 'title')),
-        heightMm:     parseHeight(g(item, 'product_height'))
-      })).filter(p => p.type !== 'Accessories' && p.link);
-
-      const top = products
-        .map(p => ({ ...p, score: scoreProduct(p) }))
-        .filter(p => p.score >= 5)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
+      const top = await fetchTopProducts();
 
       if (!top.length) { container.style.display = 'none'; return; }
 
