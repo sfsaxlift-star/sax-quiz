@@ -2093,6 +2093,21 @@ Submitted: ${payload.submittedAt}
     },
     
     init: function() {
+      // Check if we arrived via a language path (e.g. /dk, /de)
+      const storedLang = sessionStorage.getItem('quizLang');
+      const storedPath = sessionStorage.getItem('quizPath');
+      if (storedLang) {
+        sessionStorage.removeItem('quizLang');
+        sessionStorage.removeItem('quizPath');
+        if (storedPath) history.replaceState(null, null, storedPath);
+        this.changeLanguage(storedLang);
+        const langPhoneCode = { en: '+44', da: '+45', de: '+49', fr: '+33', it: '+39' };
+        if (langPhoneCode[storedLang]) document.getElementById('phoneCode').value = langPhoneCode[storedLang];
+        updateProgress();
+        updateNav();
+        return;
+      }
+
       // Map country codes to language codes (e.g. dk → da, gb/uk → en)
       const countryToLang = { dk: 'da', gb: 'en', uk: 'en' };
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sax Lift Quick Finder</title>
+  <script>
+    var pathMap = {
+      '/dk': 'da', '/de': 'de', '/fr': 'fr', '/it': 'it'
+    };
+    var path = window.location.pathname.replace(/\/$/, '');
+    var lang = pathMap[path] || 'en';
+    if (lang !== 'en') {
+      sessionStorage.setItem('quizLang', lang);
+      sessionStorage.setItem('quizPath', path);
+    }
+    window.location.replace('/');
+  </script>
+</head>
+</html>
