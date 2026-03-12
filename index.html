@@ -1721,22 +1721,9 @@ const SaxQuiz = (function() {
       
     } catch (error) {
       console.error('Submit error:', error);
-      
-      // =================================================================
-      // FALLBACK: Open email client with pre-filled data
-      // =================================================================
-      const mailtoLink = `mailto:sf@saxlift.dk?subject=${encodeURIComponent(`[Sax Lift Quiz] New Lead: ${payload.fullName} - ${payload.company}`)}&body=${encodeURIComponent(emailBody)}`;
-      
-      // Try to send via mailto as backup
-      window.location.href = mailtoLink;
-      
-      // Still show result
       showResult(recommendation);
-      
-      // Push error to GTM
       pushToDataLayer('quiz_submit_error', {
-        error_message: error.message,
-        fallback_used: 'mailto'
+        error_message: error.message
       });
     }
   }
