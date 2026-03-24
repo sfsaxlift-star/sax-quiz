@@ -1599,13 +1599,8 @@ const SaxQuiz = (function() {
       hideFieldError(email);
     }
     
-    // Phone (optional for UK/EN)
-    if (!phoneNumber.value.trim() && language !== 'en') {
-      if (showErrors) showFieldError(phoneNumber);
-      isValid = false;
-    } else {
-      hideFieldError(phoneNumber);
-    }
+    // Phone (optional)
+    hideFieldError(phoneNumber);
 
     // Company
     if (!company.value.trim()) {
