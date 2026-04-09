@@ -1708,22 +1708,25 @@ const SaxQuiz = (function() {
       // =================================================================
       payload.matchedProducts = [];
 
+      console.log('[Quiz] Sending to n8n...');
       const response = await fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
+      console.log('[Quiz] n8n response status:', response.status);
       const result = await response.json();
+      console.log('[Quiz] n8n response body:', result);
 
-      if (result.success) {
+      if (response.ok) {
         showResult(recommendation);
       } else {
         throw new Error(result.message || 'Submit failed');
       }
 
     } catch (error) {
-      console.error('Submit error:', error);
+      console.error('[Quiz] Submit error:', error);
       showResult(recommendation);
       pushToDataLayer('quiz_submit_error', {
         error_message: error.message
