@@ -1646,6 +1646,7 @@ const SaxQuiz = (function() {
 
   // Submit form
   async function submitForm() {
+    console.log('[Quiz] Answers at submission:', JSON.stringify(answers));
     const leadScore = calculateLeadScore();
     const recommendation = generateRecommendation();
     const urlParams = getUrlParams();
