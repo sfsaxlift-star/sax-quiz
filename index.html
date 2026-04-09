@@ -1711,7 +1711,10 @@ const SaxQuiz = (function() {
       console.log('[Quiz] Sending to n8n...');
       const response = await fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-quiz-secret': '996ccd65feef4b07ab9d44af113aa66480ad74564d7c4d7893e088cc21bd38c9'
+        },
         body: JSON.stringify(payload)
       });
 
