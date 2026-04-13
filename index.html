@@ -1659,6 +1659,7 @@ const SaxQuiz = (function() {
   // Submit form
   async function submitForm() {
     console.log('[Quiz] Answers at submission:', JSON.stringify(answers));
+    console.log('[Quiz] capacity key:', answers.capacity, '| q2 key:', answers.q2);
     const leadScore = calculateLeadScore();
     const recommendation = generateRecommendation();
     const urlParams = getUrlParams();
