@@ -1673,12 +1673,12 @@ const SaxQuiz = (function() {
       message: document.getElementById('message').value.trim(),
       
       // Quiz answers
-      application: answers.q1 || '',
-      capacity: ({ '500': 'Up to 500 kg', '2000': '500–2,000 kg', '4000': '2,000–4,000 kg', '4000+': 'Over 4,000 kg', 'not_sure': 'Not sure' })[answers.q2] || answers.q2 || '',
-      height: answers.q3 || '',
-      type: answers.q4 || '',
-      environment: answers.q5 || '',
-      timeline: answers.q6 || '',
+      application: answers.application || answers.q1 || '',
+      capacity: ({ '500': 'Up to 500 kg', '2000': '500–2,000 kg', '4000': '2,000–4,000 kg', '4000+': 'Over 4,000 kg', 'not_sure': 'Not sure' })[answers.capacity || answers.q2] || answers.capacity || answers.q2 || '',
+      height: answers.height || answers.q3 || '',
+      type: answers.type || answers.q4 || '',
+      environment: answers.environment || answers.q5 || '',
+      timeline: answers.timeline || answers.q6 || '',
       
       // Lead scoring & routing
       leadScore: leadScore,
