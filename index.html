@@ -1918,7 +1918,12 @@ Submitted: ${payload.submittedAt}
       heightMm:     parseHeight(g(item, 'product_height'))
     })).filter(p => p.type !== 'Accessories' && p.link);
 
-    return products
+    // Hard filter: low_profile selection must only show low profile products
+    const filtered = answers.height === 'low_profile'
+      ? products.filter(p => p.type === 'Low profile scissor lift tables')
+      : products;
+
+    return filtered
       .map(p => ({ ...p, score: scoreProduct(p) }))
       .filter(p => p.score >= 5)
       .sort((a, b) => b.score - a.score)
