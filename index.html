@@ -1808,6 +1808,12 @@ Submitted: ${payload.submittedAt}
   const CORS_PROXY = 'https://api.allorigins.win/get?url=';
   const G_NS = 'http://base.google.com/ns/1.0';
 
+  const LOW_PROFILE_IDS = new Set([
+    '10049','10050','10051','10052','10196','10248','10319','10321',
+    '13332','13353','13363','13364','13417','13418','13422','13423',
+    '13424','13436','13437','13438','13444','13476'
+  ]);
+
   // Which product_type values match each power-type answer
   const POWER_TYPES = {
     stationary: ['Single Scissor Lift Tables', '230V Lift Tables', 'Low profile scissor lift tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
@@ -1908,6 +1914,7 @@ Submitted: ${payload.submittedAt}
     const g = (el, tag) => el.getElementsByTagNameNS(G_NS, tag)[0]?.textContent?.trim() || '';
 
     const products = [...xml.querySelectorAll('item')].map(item => ({
+      id:           g(item, 'id'),
       title:        g(item, 'title'),
       link:         g(item, 'link'),
       image:        g(item, 'image_link'),
@@ -1918,9 +1925,9 @@ Submitted: ${payload.submittedAt}
       heightMm:     parseHeight(g(item, 'product_height'))
     })).filter(p => p.type !== 'Accessories' && p.link);
 
-    // Hard filter: low_profile selection must only show low profile products
+    // Hard filter: low_profile must only show products from the approved low profile ID list
     const filtered = answers.height === 'low_profile'
-      ? products.filter(p => p.type === 'Low profile scissor lift tables')
+      ? products.filter(p => LOW_PROFILE_IDS.has(p.id))
       : products;
 
     return filtered
