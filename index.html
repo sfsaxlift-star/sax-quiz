@@ -2166,33 +2166,27 @@ Submitted: ${payload.submittedAt}
       // Check if we arrived via a language path (e.g. /dk, /de)
       const storedLang = sessionStorage.getItem('quizLang');
       const storedPath = sessionStorage.getItem('quizPath');
+      const langPhoneCode = { en: '+44', da: '+45', de: '+49', fr: '+33', it: '+39' };
+      let activeLang = 'en';
+
       if (storedLang) {
+        // Arrived via language path (e.g. /fr, /dk)
         sessionStorage.removeItem('quizLang');
         sessionStorage.removeItem('quizPath');
         if (storedPath) history.replaceState(null, null, storedPath);
-        this.changeLanguage(storedLang);
-        const langPhoneCode = { en: '+44', da: '+45', de: '+49', fr: '+33', it: '+39' };
-        if (langPhoneCode[storedLang]) document.getElementById('phoneCode').value = langPhoneCode[storedLang];
-        updateProgress();
-        updateNav();
-        return;
+        activeLang = storedLang;
+      } else {
+        // Detect language from ?lang= parameter on the iframe src
+        const countryToLang = { dk: 'da', gb: 'en', uk: 'en' };
+        const rawLang = (new URLSearchParams(window.location.search).get('lang') || '').toLowerCase();
+        const urlLang = countryToLang[rawLang] || rawLang;
+        const supportedLangs = Object.keys(translations);
+        activeLang = supportedLangs.includes(urlLang) ? urlLang : 'en';
       }
 
-      // Map country codes to language codes (e.g. dk → da, gb/uk → en)
-      const countryToLang = { dk: 'da', gb: 'en', uk: 'en' };
-
-      // Detect language from ?lang= parameter on the iframe src
-      const rawLang = (new URLSearchParams(window.location.search).get('lang') || '').toLowerCase();
-      const urlLang = countryToLang[rawLang] || rawLang;
-
-      const supportedLangs = Object.keys(translations);
-      const lang = supportedLangs.includes(urlLang) ? urlLang : 'en';
-      this.changeLanguage(lang);
-
-      // Pre-select phone country code based on language
-      const langPhoneCode = { en: '+44', da: '+45', de: '+49', fr: '+33', it: '+39' };
-      if (langPhoneCode[lang]) {
-        document.getElementById('phoneCode').value = langPhoneCode[lang];
+      this.changeLanguage(activeLang);
+      if (langPhoneCode[activeLang]) {
+        document.getElementById('phoneCode').value = langPhoneCode[activeLang];
       }
 
       // Set up form validation listeners
