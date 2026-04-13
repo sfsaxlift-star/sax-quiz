@@ -1721,16 +1721,23 @@ const SaxQuiz = (function() {
     
     let topProducts = [];
     try {
-      // =================================================================
-      // Fetch products and POST to n8n in parallel — don't block either on the other
-      // =================================================================
+      // Fetch products first (max 5s), then send to n8n with products included
       const productTimeout = new Promise(resolve => setTimeout(() => resolve([]), 5000));
-      const productFetch = fetchTopProducts().catch(() => []);
-      const productPromise = Promise.race([productFetch, productTimeout]);
+      topProducts = await Promise.race([fetchTopProducts().catch(() => []), productTimeout]);
 
-      // Send to n8n immediately without waiting for products
+      payload.matchedProducts = topProducts.map(p => ({
+        title:        p.title,
+        link:         p.link,
+        image:        p.image,
+        price:        p.price,
+        availability: p.availability
+      }));
+
+      // Show result immediately, send to n8n in background
+      showResult(recommendation, topProducts);
+
       console.log('[Quiz] Sending to n8n...');
-      const n8nPromise = fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
+      fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1741,15 +1748,10 @@ const SaxQuiz = (function() {
         console.log('[Quiz] n8n response status:', r.status);
         const body = await r.json().catch(() => ({}));
         console.log('[Quiz] n8n response body:', body);
-        return r;
       }).catch(err => {
         console.error('[Quiz] n8n fetch error:', err);
         pushToDataLayer('quiz_submit_error', { error_message: err.message });
       });
-
-      // Wait for products, then show result (n8n runs in background)
-      topProducts = await productPromise;
-      showResult(recommendation, topProducts);
 
     } catch (error) {
       console.error('[Quiz] Submit error:', error);
