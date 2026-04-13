@@ -1721,33 +1721,33 @@ const SaxQuiz = (function() {
     let topProducts = [];
     try {
       // =================================================================
-      // POST to n8n webhook immediately (products loaded separately for display)
+      // Fetch products and POST to n8n in parallel — don't block either on the other
       // =================================================================
       const productTimeout = new Promise(resolve => setTimeout(() => resolve([]), 5000));
       const productFetch = fetchTopProducts().catch(() => []);
-      topProducts = await Promise.race([productFetch, productTimeout]);
-      payload.matchedProducts = topProducts.map(p => ({
-        title:        p.title,
-        link:         p.link,
-        image:        p.image,
-        price:        p.price,
-        availability: p.availability
-      }));
+      const productPromise = Promise.race([productFetch, productTimeout]);
 
+      // Send to n8n immediately without waiting for products
       console.log('[Quiz] Sending to n8n...');
-      const response = await fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
+      const n8nPromise = fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-quiz-secret': 'sax2025quiz'
         },
         body: JSON.stringify(payload)
+      }).then(async r => {
+        console.log('[Quiz] n8n response status:', r.status);
+        const body = await r.json().catch(() => ({}));
+        console.log('[Quiz] n8n response body:', body);
+        return r;
+      }).catch(err => {
+        console.error('[Quiz] n8n fetch error:', err);
+        pushToDataLayer('quiz_submit_error', { error_message: err.message });
       });
 
-      console.log('[Quiz] n8n response status:', response.status);
-      const result = await response.json().catch(() => ({}));
-      console.log('[Quiz] n8n response body:', result);
-
+      // Wait for products, then show result (n8n runs in background)
+      topProducts = await productPromise;
       showResult(recommendation, topProducts);
 
     } catch (error) {
