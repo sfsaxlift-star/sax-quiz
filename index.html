@@ -1367,7 +1367,7 @@ const SaxQuiz = (function() {
       placeholder_company: "Entreprise",
       placeholder_phone: "01 23 45 67 89",
       placeholder_message: "Dimensions de la plateforme, exigences spéciales, quantité nécessaire...",
-      form_email: "Email1",
+      form_email: "Email",
       form_phone: "Téléphone",
       form_company: "Entreprise",
       form_country: "Pays",
@@ -2190,11 +2190,13 @@ Submitted: ${payload.submittedAt}
       }
 
       // Set up form validation listeners
-      const formInputs = document.querySelectorAll('#contactForm input, #contactForm select');
+      const formInputs = document.querySelectorAll('#contactForm input, #contactForm select, #contactForm textarea');
       formInputs.forEach(input => {
         input.addEventListener('input', () => validateForm(false));
         input.addEventListener('change', () => validateForm(false));
       });
+      // Explicit listener on consent checkbox to ensure button state updates
+      document.getElementById('consent').addEventListener('change', () => validateForm(false));
       
       
       updateProgress();
