@@ -1703,7 +1703,11 @@ const SaxQuiz = (function() {
       application: payload.application,
       capacity: payload.capacity,
       timeline: payload.timeline,
-      is_free_email: isFreeEmailUsed
+      is_free_email: isFreeEmailUsed,
+      gclid: urlParams.gclid || undefined,
+      utm_source: urlParams.utm_source || undefined,
+      utm_medium: urlParams.utm_medium || undefined,
+      utm_campaign: urlParams.utm_campaign || undefined
     });
     
     // Show loading
