@@ -1738,7 +1738,7 @@ const SaxQuiz = (function() {
       showResult(recommendation, topProducts);
 
       console.log('[Quiz] Sending to n8n...');
-      fetch('https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission', {
+      fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
