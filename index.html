@@ -1962,7 +1962,7 @@ Submitted: ${payload.submittedAt}
       price.textContent = p.price;
       const stock = document.createElement('div');
       stock.className = 'sax-quiz__product-card-stock ' + (p.availability === 'in stock' ? 'in-stock' : 'out-stock');
-      stock.textContent = p.availability === 'in stock' ? '● In Stock' : '○ Lead time applies';
+      stock.textContent = p.availability === 'in stock' ? '● In Stock' : '○ In production';
       const btn = document.createElement('a');
       btn.href = p.link; btn.target = '_blank'; btn.rel = 'noopener';
       btn.className = 'sax-quiz__product-card-btn';
