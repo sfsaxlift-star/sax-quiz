@@ -1146,7 +1146,11 @@ const SaxQuiz = (function() {
       result_title: "Thank You!",
       result_text: "We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.<br>A confirmation has been sent to your email for your records.",
       rec_in_stock: "In Stock – Fast Delivery",
-      rec_custom: "Custom Solution",
+      rec_custom: "Custom Engineered Solution",
+      rec_type_stationary: "Stationary Lift Table",
+      rec_type_mobile: "Mobile Lift Table",
+      rec_type_pit: "Pit-mounted Lift Table",
+      rec_type_standard: "Standard Lift Table",
       email_warning: "For faster response, please use your work email",
       product_in_stock: "● In Stock",
       product_in_production: "○ In production",
@@ -1182,6 +1186,11 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "In den Boden eingelassen, Plattform bündig mit dem Boden",
       result_title: "Vielen Dank!",
       result_text: "Wir haben Ihre Anfrage erhalten. Ein Sax Lift-Spezialist wird sich innerhalb von 24 Stunden mit Ihrem persönlichen Angebot bei Ihnen melden.<br>Eine Bestätigung wurde zur Ihrer Information an Ihre E-Mail gesendet.",
+      rec_custom: "Sonderlösung",
+      rec_type_stationary: "Stationärer Hubtisch",
+      rec_type_mobile: "Mobiler Hubtisch",
+      rec_type_pit: "Grubenhubtisch",
+      rec_type_standard: "Standard-Hubtisch",
       product_in_stock: "● Auf Lager",
       product_in_production: "○ In Produktion",
       product_view_btn: "Produkt ansehen →",
@@ -1215,6 +1224,11 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "Sænket ned i gulvet, platform i niveau med gulvet",
       result_title: "Tak!",
       result_text: "Vi har modtaget din henvendelse. En Sax Lift-specialist vil kontakte dig inden for 24 timer med dit personlige tilbud.<br>En bekræftelse er sendt til din e-mail til orientering.",
+      rec_custom: "Specialløsning",
+      rec_type_stationary: "Stationært løftebord",
+      rec_type_mobile: "Mobilt løftebord",
+      rec_type_pit: "Nedgravet løftebord",
+      rec_type_standard: "Standard løftebord",
       product_in_stock: "● På lager",
       product_in_production: "○ I produktion",
       product_view_btn: "Se produkt →",
@@ -1258,7 +1272,7 @@ const SaxQuiz = (function() {
       q4_opt1_desc: "Installazione fissa",
       q4_opt2_label: "Mobile",
       q4_opt2_desc: "Su ruote o con telaio da carrello",
-      q4_opt3_label: "Installazione a fossa",
+      q4_opt3_label: "Installazione in fossa",
       q4_opt3_desc: "Incassato nel pavimento, piattaforma a livello del suolo",
       q4_opt4_desc: "Ho bisogno di consigli sull'opzione migliore",
       q5_title: "Qual è il tuo ambiente di lavoro?",
@@ -1307,7 +1321,11 @@ const SaxQuiz = (function() {
       result_title: "Grazie!",
       result_text: "Abbiamo ricevuto la tua richiesta. Uno specialista Sax Lift ti contatterà entro 24 ore con il tuo preventivo personalizzato.<br>Una conferma è stata inviata alla tua email per tua documentazione.",
       rec_in_stock: "Disponibile – Consegna rapida",
-      rec_custom: "Soluzione personalizzata",
+      rec_custom: "Soluzione su misura",
+      rec_type_stationary: "Tavolo elevatore fisso",
+      rec_type_mobile: "Tavolo elevatore mobile",
+      rec_type_pit: "Tavolo elevatore a fossa",
+      rec_type_standard: "Tavolo elevatore standard",
       email_warning: "Per una risposta più rapida, utilizza la tua email aziendale",
       product_in_stock: "● Disponibile",
       product_in_production: "○ In produzione",
@@ -1401,6 +1419,10 @@ const SaxQuiz = (function() {
       result_text: "Nous avons reçu votre demande. Un spécialiste Sax Lift vous contactera dans les 24 heures avec votre devis personnalisé.<br>Une confirmation a été envoyée à votre adresse e-mail pour vos dossiers.",
       rec_in_stock: "En stock – Livraison rapide",
       rec_custom: "Solution sur mesure",
+      rec_type_stationary: "Table élévatrice fixe",
+      rec_type_mobile: "Table élévatrice mobile",
+      rec_type_pit: "Table élévatrice encastrée en fosse",
+      rec_type_standard: "Table élévatrice standard",
       email_warning: "Pour une réponse plus rapide, utilisez votre email professionnel",
       product_in_stock: "● En stock",
       product_in_production: "○ En production",
@@ -1453,7 +1475,7 @@ const SaxQuiz = (function() {
     let features = [];
     
     if (isCustom) {
-      title = 'Custom Engineered Solution';
+      title = t('rec_custom');
       specs = 'Tailored to your specific requirements';
       features = [
         'Engineering consultation included',
@@ -1464,20 +1486,20 @@ const SaxQuiz = (function() {
     } else {
       // Build recommendation based on answers
       const typeMap = {
-        'stationary':  'Stationary Lift Table',
-        'mobile':      'Mobile Lift Table',
-        'pit_mounted': 'Pit-mounted Lift Table',
-        'not_sure':    'Lift Table'
+        'stationary':  t('rec_type_stationary'),
+        'mobile':      t('rec_type_mobile'),
+        'pit_mounted': t('rec_type_pit'),
+        'not_sure':    t('rec_type_standard')
       };
-      
+
       const materialMap = {
         'standard_indoor': 'Painted Steel',
         'none': 'Painted Steel',
         'wet_washdown': 'Stainless Steel',
         'outdoor_corrosive': 'Galvanised Steel',
       };
-      
-      title = typeMap[answers.type] || 'Standard Lift Table';
+
+      title = typeMap[answers.type] || t('rec_type_standard');
       
       const material = materialMap[answers.environment] || 'Standard';
       const capacity = answers.capacity !== 'not_sure' ? answers.capacity + ' kg capacity' : '';
