@@ -1640,8 +1640,6 @@ const SaxQuiz = (function() {
 
   // Submit form
   async function submitForm() {
-    console.log('[Quiz] Answers at submission:', JSON.stringify(answers));
-    console.log('[Quiz] capacity key:', answers.capacity, '| q2 key:', answers.q2);
     const recommendation = generateRecommendation();
     const urlParams = getUrlParams();
     const isFreeEmailUsed = isFreeEmail(document.getElementById('email').value);
@@ -1714,7 +1712,6 @@ const SaxQuiz = (function() {
       }));
 
       // Fire n8n first (non-blocking), then show result
-      console.log('[Quiz] Sending to n8n...');
       fetch('https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission', {
         method: 'POST',
         headers: {
@@ -1722,10 +1719,6 @@ const SaxQuiz = (function() {
           'x-quiz-secret': 'sax2025quiz'
         },
         body: JSON.stringify(payload)
-      }).then(async r => {
-        console.log('[Quiz] n8n response status:', r.status);
-        const body = await r.json().catch(() => ({}));
-        console.log('[Quiz] n8n response body:', body);
       }).catch(err => {
         console.error('[Quiz] n8n fetch error:', err);
         pushToDataLayer('quiz_submit_error', { error_message: err.message });
