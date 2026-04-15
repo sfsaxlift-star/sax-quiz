@@ -1786,7 +1786,14 @@ Submitted: ${payload.submittedAt}
   }
 
   // ── Product feed matching ─────────────────────────────────────────
-  const FEED_URL = 'https://feeds.datafeedwatch.com/144712/952e3a22cc8ae57643397c0330d6fcaa9809358b.xml';
+  const FEED_URLS = {
+    en: 'https://feeds.datafeedwatch.com/144712/952e3a22cc8ae57643397c0330d6fcaa9809358b.xml',
+    fr: 'https://feeds.datafeedwatch.com/144718/dfd5ccc61aa86c082613fbe02b1def1e63faf8a5.xml',
+    it: 'https://feeds.datafeedwatch.com/144725/ea800b6ddd3ae9d992516e87c27fe470c85f8c07.xml',
+    de: 'https://feeds.datafeedwatch.com/144715/0f1b3787aa42f49a738efd4c5b5460d74eb1c1b6.xml',
+    da: 'https://feeds.datafeedwatch.com/144567/bf55872af682ce0b65c17c74ec13e5f285781edf.xml',
+  };
+  const FEED_URL = FEED_URLS[language] || FEED_URLS.en;
   const CORS_PROXY = 'https://api.allorigins.win/get?url=';
   const G_NS = 'http://base.google.com/ns/1.0';
 
