@@ -378,6 +378,18 @@
       line-height: 1.6;
     }
 
+    .sax-quiz__submit-warning {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      color: #9a3412;
+      font-size: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .sax-quiz__submit-warning a { color: #9a3412; font-weight: 600; }
+
     .sax-quiz__recommendation {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
@@ -1152,6 +1164,7 @@ const SaxQuiz = (function() {
       rec_type_pit: "Pit-mounted Lift Table",
       rec_type_standard: "Standard Lift Table",
       email_warning: "For faster response, please use your work email",
+      webhook_error: "There was a problem sending your request. Please <a href=\"mailto:info@saxlift.com\">email us directly</a>.",
       product_in_stock: "● In Stock",
       product_in_production: "○ In production",
       product_view_btn: "View Product →",
@@ -1327,6 +1340,7 @@ const SaxQuiz = (function() {
       rec_type_pit: "Tavolo elevatore a fossa",
       rec_type_standard: "Tavolo elevatore standard",
       email_warning: "Per una risposta più rapida, utilizza la tua email aziendale",
+      webhook_error: "Si è verificato un problema nell'invio della tua richiesta. Per favore <a href=\"mailto:info@saxlift.com\">scrivici direttamente</a>.",
       product_in_stock: "● Disponibile",
       product_in_production: "○ In produzione",
       product_view_btn: "Vedi prodotto →",
@@ -1424,6 +1438,7 @@ const SaxQuiz = (function() {
       rec_type_pit: "Table élévatrice encastrée en fosse",
       rec_type_standard: "Table élévatrice standard",
       email_warning: "Pour une réponse plus rapide, utilisez votre email professionnel",
+      webhook_error: "Un problème est survenu lors de l'envoi de votre demande. Veuillez <a href=\"mailto:info@saxlift.com\">nous écrire directement</a>.",
       product_in_stock: "● En stock",
       product_in_production: "○ En production",
       product_view_btn: "Voir le produit →",
@@ -1435,6 +1450,35 @@ const SaxQuiz = (function() {
   // Translation helper — looks up key in current language, falls back to EN
   function t(key) {
     return (translations[language] || translations.en)[key] || translations.en[key] || key;
+  }
+
+  // Post lead to n8n webhook with one retry and a visible fallback if both fail
+  async function postToWebhook(payload) {
+    const WEBHOOK_URL = 'https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission';
+    const makeOpts = () => ({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-quiz-secret': 'sax2025quiz' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000)
+    });
+    const attempt = () => fetch(WEBHOOK_URL, makeOpts()).then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    });
+    try {
+      await attempt();
+    } catch {
+      await new Promise(res => setTimeout(res, 1000));
+      try {
+        await attempt();
+      } catch (e2) {
+        // Both attempts failed — show warning on result screen
+        const warn = document.createElement('p');
+        warn.className = 'sax-quiz__submit-warning';
+        warn.innerHTML = t('webhook_error');
+        document.getElementById('resultState').prepend(warn);
+        pushToDataLayer('quiz_submit_error', { error_message: e2.message });
+      }
+    }
   }
 
   // Get URL parameters (UTM, gclid)
@@ -1758,18 +1802,8 @@ const SaxQuiz = (function() {
         availability: p.availability
       }));
 
-      // Fire n8n first (non-blocking), then show result
-      fetch('https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-quiz-secret': 'sax2025quiz'
-        },
-        body: JSON.stringify(payload)
-      }).catch(err => {
-        console.error('[Quiz] n8n fetch error:', err);
-        pushToDataLayer('quiz_submit_error', { error_message: err.message });
-      });
+      // Fire n8n (non-blocking — retries once, shows warning if both fail)
+      postToWebhook(payload);
 
       showResult(recommendation, topProducts);
 
@@ -1940,6 +1974,7 @@ Submitted: ${payload.submittedAt}
     }
 
     const xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+    if (xml.documentElement.nodeName === 'parsererror') throw new Error('Feed XML parse error');
     const g = (el, tag) => el.getElementsByTagNameNS(G_NS, tag)[0]?.textContent?.trim() || '';
 
     const products = [...xml.querySelectorAll('item')].map(item => ({
