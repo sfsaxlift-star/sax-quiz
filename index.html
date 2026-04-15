@@ -1793,7 +1793,6 @@ Submitted: ${payload.submittedAt}
     de: 'https://feeds.datafeedwatch.com/144715/0f1b3787aa42f49a738efd4c5b5460d74eb1c1b6.xml',
     da: 'https://feeds.datafeedwatch.com/144567/bf55872af682ce0b65c17c74ec13e5f285781edf.xml',
   };
-  const FEED_URL = FEED_URLS[language] || FEED_URLS.en;
   const CORS_PROXY = 'https://api.allorigins.win/get?url=';
   const G_NS = 'http://base.google.com/ns/1.0';
 
@@ -1888,13 +1887,14 @@ Submitted: ${payload.submittedAt}
   }
 
   async function fetchTopProducts() {
+    const feedUrl = FEED_URLS[language] || FEED_URLS.en;
     let xmlText;
     try {
-      const res = await fetch(FEED_URL);
+      const res = await fetch(feedUrl);
       if (!res.ok) throw new Error('direct fetch failed');
       xmlText = await res.text();
     } catch {
-      const res = await fetch(CORS_PROXY + encodeURIComponent(FEED_URL));
+      const res = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
       const json = await res.json();
       xmlText = json.contents;
     }
