@@ -1405,49 +1405,7 @@ const SaxQuiz = (function() {
     };
   }
 
-  // Calculate lead score
-  function calculateLeadScore() {
-    let score = 0;
-    
-    // Timeline scoring
-    const timelineScores = {
-      'urgent': 30,
-      'soon': 25,
-      'planning': 15,
-      'just_researching': 5
-    };
-    score += timelineScores[answers.timeline] || 10;
-    
-    // Capacity scoring (higher = more serious buyer)
-    const capacityScores = {
-      '500': 10,
-      '2000': 20,
-      '4000': 25,
-      '4000+': 30,
-      'not_sure': 5
-    };
-    score += capacityScores[answers.capacity] || 10;
-    
-    // Environment scoring (special = higher value)
-    const envScores = {
-      'standard_indoor': 10,
-      'none': 10,
-      'wet_washdown': 20,
-      'outdoor_corrosive': 15,
-      'explosive_atex': 25,
-    };
-    score += envScores[answers.environment] || 10;
-    
-    // "Not sure" penalty
-    let notSureCount = 0;
-    Object.values(answers).forEach(val => {
-      if (val === 'not_sure') notSureCount++;
-    });
-    score -= notSureCount * 5;
-    
-    // Ensure score is between 0-100
-    return Math.max(0, Math.min(100, score));
-  }
+
 
   // Determine if standard or custom solution
   function isCustomSolution() {
@@ -1660,7 +1618,6 @@ const SaxQuiz = (function() {
   async function submitForm() {
     console.log('[Quiz] Answers at submission:', JSON.stringify(answers));
     console.log('[Quiz] capacity key:', answers.capacity, '| q2 key:', answers.q2);
-    const leadScore = calculateLeadScore();
     const recommendation = generateRecommendation();
     const urlParams = getUrlParams();
     const isFreeEmailUsed = isFreeEmail(document.getElementById('email').value);
@@ -1681,8 +1638,7 @@ const SaxQuiz = (function() {
       environment: answers.environment || answers.q5 || '',
       timeline: answers.timeline || answers.q6 || '',
       
-      // Lead scoring & routing
-      leadScore: leadScore,
+      // Routing
       isCustomSolution: recommendation.isCustom,
       isFreeEmail: isFreeEmailUsed,
       recommendedProduct: recommendation.title,
@@ -1700,7 +1656,6 @@ const SaxQuiz = (function() {
     
     // Push to GTM
     pushToDataLayer('quiz_lead_submit', {
-      lead_score: leadScore,
       is_custom_solution: recommendation.isCustom,
       application: payload.application,
       capacity: payload.capacity,
@@ -1790,7 +1745,6 @@ ${payload.message || 'N/A'}
 
 LEAD ANALYSIS
 -------------
-Lead Score: ${payload.leadScore}/100
 Recommendation: ${recommendation.title}
 Solution Type: ${recommendation.isCustom ? 'CUSTOM SOLUTION REQUIRED' : 'Standard - In Stock'}
 Free Email Used: ${payload.isFreeEmail ? 'Yes (lower priority)' : 'No (work email)'}
