@@ -1713,9 +1713,7 @@ const SaxQuiz = (function() {
         availability: p.availability
       }));
 
-      // Show result immediately, send to n8n in background
-      showResult(recommendation, topProducts);
-
+      // Fire n8n first (non-blocking), then show result
       console.log('[Quiz] Sending to n8n...');
       fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
         method: 'POST',
@@ -1732,6 +1730,8 @@ const SaxQuiz = (function() {
         console.error('[Quiz] n8n fetch error:', err);
         pushToDataLayer('quiz_submit_error', { error_message: err.message });
       });
+
+      showResult(recommendation, topProducts);
 
     } catch (error) {
       console.error('[Quiz] Submit error:', error);
