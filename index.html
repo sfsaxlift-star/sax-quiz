@@ -1614,6 +1614,30 @@ const SaxQuiz = (function() {
     }
   }
 
+  // Map answer values to localized labels for email display
+  function getLocalizedLabel(question, value) {
+    if (!value) return '';
+    const trans = translations[language] || translations.en;
+    const en = translations.en;
+    const lookup = (key) => trans[key] || en[key] || value;
+
+    const map = {
+      q1: { loading_unloading: 'q1_opt1_label', workstation: 'q1_opt2_label', other: 'q1_opt5_label' },
+      q2: { '500': 'q2_opt1_label', '2000': null, '4000': null, '4000+': 'q2_opt5_label', not_sure: 'not_sure' },
+      q3: { low_profile: 'q3_opt1_label', standard: 'q3_opt2_label', high: 'q3_opt3_label', not_sure: 'not_sure' },
+      q4: { stationary: 'q4_opt1_label', mobile: 'q4_opt2_label', pit_mounted: 'q4_opt3_label', not_sure: 'not_sure' },
+      q5: { standard_indoor: 'q5_opt1_label', wet_washdown: 'q5_opt2_label', outdoor_corrosive: 'q5_opt3_label', explosive_atex: 'q5_opt4_label', none: 'q5_opt5_label', not_sure: 'not_sure' },
+      q6: { urgent: 'q6_opt1_label', soon: 'q6_opt2_label', planning: 'q6_opt3_label', just_researching: 'q6_opt4_label', not_sure: 'not_sure' }
+    };
+
+    // Capacity middle ranges have no translation key — same across all languages
+    if (question === 'q2' && value === '2000') return '500–2,000 kg';
+    if (question === 'q2' && value === '4000') return '2,000–4,000 kg';
+
+    const key = map[question]?.[value];
+    return key ? lookup(key) : value;
+  }
+
   // Submit form
   async function submitForm() {
     console.log('[Quiz] Answers at submission:', JSON.stringify(answers));
@@ -1630,13 +1654,13 @@ const SaxQuiz = (function() {
       company: document.getElementById('company').value.trim(),
       message: document.getElementById('message').value.trim(),
       
-      // Quiz answers
-      application: answers.application || answers.q1 || '',
-      capacity: ({ '500': 'Up to 500 kg', '2000': '500–2,000 kg', '4000': '2,000–4,000 kg', '4000+': 'Over 4,000 kg', 'not_sure': 'Not sure' })[answers.capacity || answers.q2] || answers.capacity || answers.q2 || '',
-      height: answers.height || answers.q3 || '',
-      type: answers.type || answers.q4 || '',
-      environment: answers.environment || answers.q5 || '',
-      timeline: answers.timeline || answers.q6 || '',
+      // Quiz answers — localized labels matching the user's language
+      application: getLocalizedLabel('q1', answers.application || answers.q1),
+      capacity:    getLocalizedLabel('q2', answers.capacity    || answers.q2),
+      height:      getLocalizedLabel('q3', answers.height      || answers.q3),
+      type:        getLocalizedLabel('q4', answers.type        || answers.q4),
+      environment: getLocalizedLabel('q5', answers.environment || answers.q5),
+      timeline:    getLocalizedLabel('q6', answers.timeline    || answers.q6),
       
       // Routing
       isCustomSolution: recommendation.isCustom,
