@@ -1147,7 +1147,11 @@ const SaxQuiz = (function() {
       result_text: "We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.<br>A confirmation has been sent to your email for your records.",
       rec_in_stock: "In Stock – Fast Delivery",
       rec_custom: "Custom Solution",
-      email_warning: "For faster response, please use your work email"
+      email_warning: "For faster response, please use your work email",
+      product_in_stock: "● In Stock",
+      product_in_production: "○ In production",
+      product_view_btn: "View Product →",
+      products_loading: "Finding matching products…"
     },
     de: {
       title: "Finden Sie Ihren perfekten Hubtisch",
@@ -1178,6 +1182,10 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "In den Boden eingelassen, Plattform bündig mit dem Boden",
       result_title: "Vielen Dank!",
       result_text: "Wir haben Ihre Anfrage erhalten. Ein Sax Lift-Spezialist wird sich innerhalb von 24 Stunden mit Ihrem persönlichen Angebot bei Ihnen melden.<br>Eine Bestätigung wurde zur Ihrer Information an Ihre E-Mail gesendet.",
+      product_in_stock: "● Auf Lager",
+      product_in_production: "○ In Produktion",
+      product_view_btn: "Produkt ansehen →",
+      products_loading: "Passende Produkte werden gesucht…",
       // Add more German translations as needed
     },
     da: {
@@ -1207,6 +1215,10 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "Sænket ned i gulvet, platform i niveau med gulvet",
       result_title: "Tak!",
       result_text: "Vi har modtaget din henvendelse. En Sax Lift-specialist vil kontakte dig inden for 24 timer med dit personlige tilbud.<br>En bekræftelse er sendt til din e-mail til orientering.",
+      product_in_stock: "● På lager",
+      product_in_production: "○ I produktion",
+      product_view_btn: "Se produkt →",
+      products_loading: "Finder matchende produkter…",
       // Add more Danish translations as needed
     },
     it: {
@@ -1296,7 +1308,11 @@ const SaxQuiz = (function() {
       result_text: "Abbiamo ricevuto la tua richiesta. Uno specialista Sax Lift ti contatterà entro 24 ore con il tuo preventivo personalizzato.<br>Una conferma è stata inviata alla tua email per tua documentazione.",
       rec_in_stock: "Disponibile – Consegna rapida",
       rec_custom: "Soluzione personalizzata",
-      email_warning: "Per una risposta più rapida, utilizza la tua email aziendale"
+      email_warning: "Per una risposta più rapida, utilizza la tua email aziendale",
+      product_in_stock: "● Disponibile",
+      product_in_production: "○ In produzione",
+      product_view_btn: "Vedi prodotto →",
+      products_loading: "Ricerca di prodotti corrispondenti…"
     },
     fr: {
       title: "Trouvez Votre Table Élévatrice Idéale",
@@ -1385,10 +1401,19 @@ const SaxQuiz = (function() {
       result_text: "Nous avons reçu votre demande. Un spécialiste Sax Lift vous contactera dans les 24 heures avec votre devis personnalisé.<br>Une confirmation a été envoyée à votre adresse e-mail pour vos dossiers.",
       rec_in_stock: "En stock – Livraison rapide",
       rec_custom: "Solution sur mesure",
-      email_warning: "Pour une réponse plus rapide, utilisez votre email professionnel"
+      email_warning: "Pour une réponse plus rapide, utilisez votre email professionnel",
+      product_in_stock: "● En stock",
+      product_in_production: "○ En production",
+      product_view_btn: "Voir le produit →",
+      products_loading: "Recherche de produits correspondants…"
     },
     // Add other languages (nl, sv, pl) as needed
   };
+
+  // Translation helper — looks up key in current language, falls back to EN
+  function t(key) {
+    return (translations[language] || translations.en)[key] || translations.en[key] || key;
+  }
 
   // Get URL parameters (UTM, gclid)
   function getUrlParams() {
@@ -1940,11 +1965,11 @@ Submitted: ${payload.submittedAt}
       price.textContent = p.price;
       const stock = document.createElement('div');
       stock.className = 'sax-quiz__product-card-stock ' + (p.availability === 'in stock' ? 'in-stock' : 'out-stock');
-      stock.textContent = p.availability === 'in stock' ? '● In Stock' : '○ In production';
+      stock.textContent = p.availability === 'in stock' ? t('product_in_stock') : t('product_in_production');
       const btn = document.createElement('a');
       btn.href = p.link; btn.target = '_blank'; btn.rel = 'noopener';
       btn.className = 'sax-quiz__product-card-btn';
-      btn.textContent = 'View Product →';
+      btn.textContent = t('product_view_btn');
       body.append(title, price, stock, btn);
       card.append(img, body);
       cards.appendChild(card);
@@ -1955,7 +1980,7 @@ Submitted: ${payload.submittedAt}
     const container = document.getElementById('productMatches');
     const cards = document.getElementById('productCards');
     container.style.display = 'block';
-    cards.innerHTML = '<p class="sax-quiz__products-loading">Finding matching products…</p>';
+    cards.innerHTML = `<p class="sax-quiz__products-loading">${t('products_loading')}</p>`;
 
     try {
       const top = await fetchTopProducts();
@@ -1989,14 +2014,14 @@ Submitted: ${payload.submittedAt}
 
         const stock = document.createElement('div');
         stock.className = 'sax-quiz__product-card-stock ' + (isInStock ? 'in-stock' : 'out-stock');
-        stock.textContent = isInStock ? '● In Stock' : '○ Lead time applies';
+        stock.textContent = isInStock ? t('product_in_stock') : t('product_in_production');
 
         const btn = document.createElement('a');
         btn.href = safeLink;
         btn.target = '_blank';
         btn.rel = 'noopener noreferrer';
         btn.className = 'sax-quiz__product-card-btn';
-        btn.textContent = 'View Product →';
+        btn.textContent = t('product_view_btn');
 
         body.append(title, price, stock, btn);
         card.append(img, body);
