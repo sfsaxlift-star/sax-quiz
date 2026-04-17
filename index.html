@@ -1911,7 +1911,8 @@ Submitted: ${payload.submittedAt}
   }
 
   function capacityMatches(kg, quizCap) {
-    if (!kg || quizCap === 'not_sure') return true;
+    if (quizCap === 'not_sure') return true;
+    if (!kg) return false; // unknown capacity — no match
     const ranges = { '500': [0,500], '2000': [501,2000], '4000': [2001,4000], '4000+': [4001, Infinity] };
     const [lo, hi] = ranges[quizCap] || [0, Infinity];
     return kg >= lo && kg <= hi;
@@ -1946,7 +1947,8 @@ Submitted: ${payload.submittedAt}
     if (powerMatch.includes(type)) score += 3;
     else if (answers.type === 'not_sure') score += 1;
 
-    // Capacity (2 pts)
+    // Capacity (2 pts) — disqualify if product capacity is known and doesn't match
+    if (p.capacityKg !== null && !capacityMatches(p.capacityKg, answers.capacity)) return 0;
     if (capacityMatches(p.capacityKg, answers.capacity)) score += 2;
 
     // Height (1 pt)
