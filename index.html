@@ -1878,9 +1878,10 @@ Submitted: ${payload.submittedAt}
 
   // Which product_type values match each power-type answer
   const POWER_TYPES = {
-    stationary: ['Single Scissor Lift Tables', '230V Lift Tables', 'Low profile scissor lift tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
-    mobile:     ['Electrical mobile lift tables', 'Manual mobile lift tables'],
-    not_sure:   []
+    stationary:  ['Single Scissor Lift Tables', '230V Lift Tables', 'Low profile scissor lift tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
+    mobile:      ['Electrical mobile lift tables', 'Manual mobile lift tables'],
+    pit_mounted: ['Single Scissor Lift Tables', '230V Lift Tables', 'Low profile scissor lift tables', 'Tandem scissor lift tables', 'Vertical scissor lift tables'],
+    not_sure:    []
   };
 
   // Which product_type values match each environment answer
@@ -1994,9 +1995,14 @@ Submitted: ${payload.submittedAt}
       ? products.filter(p => LOW_PROFILE_IDS.has(p.id))
       : products;
 
-    return filtered
+    // Pit-mounted excludes ramp products (identified by title)
+    const candidates = answers.type === 'pit_mounted'
+      ? filtered.filter(p => !/ramp/i.test(p.title))
+      : filtered;
+
+    return candidates
       .map(p => ({ ...p, score: scoreProduct(p) }))
-      .filter(p => p.score >= 5)
+      .filter(p => p.score >= 4)
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
   }
