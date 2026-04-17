@@ -1935,9 +1935,10 @@ Submitted: ${payload.submittedAt}
       if (envMatch.includes(type)) score += 4;
       else return 0; // wrong environment = disqualify
     } else {
-      // standard_indoor: exclude specialist types
+      // standard_indoor: disqualify specialist types entirely
       const allSpecial = Object.values(ENV_TYPES).flat();
-      if (!allSpecial.includes(type)) score += 4;
+      if (allSpecial.includes(type)) return 0;
+      score += 4;
     }
 
     // Power type (3 pts)
