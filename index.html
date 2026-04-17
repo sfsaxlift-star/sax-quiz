@@ -1943,7 +1943,7 @@ Submitted: ${payload.submittedAt}
     }
 
     // Mobile lift tables are only available up to 1000 kg — disqualify for higher ranges
-    if (POWER_TYPES.mobile.includes(type) && ['2000', '4000', '4000+'].includes(answers.capacity)) return 0;
+    if (POWER_TYPES.mobile.includes(type) && ['4000', '4000+'].includes(answers.capacity)) return 0;
 
     // Power type (3 pts)
     const powerMatch = POWER_TYPES[answers.type] || [];
