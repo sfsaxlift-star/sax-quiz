@@ -10,7 +10,7 @@
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sax Lift - Find Your Lift Table</title>
+  <title>Sax Lift - Quick Product Finder</title>
   <style>
     * {
       box-sizing: border-box;
@@ -1947,6 +1947,14 @@ Submitted: ${payload.submittedAt}
 
     // Power type (3 pts)
     const powerMatch = POWER_TYPES[answers.type] || [];
+
+    // Disqualify if user chose a specific type and product doesn't match
+    // Exempt environment-specific types (Stainless Steel, Galvanised, ATEX) — handled by env check
+    if (answers.type && answers.type !== 'not_sure') {
+      const allSpecial = Object.values(ENV_TYPES).flat();
+      if (!powerMatch.includes(type) && !allSpecial.includes(type)) return 0;
+    }
+
     if (powerMatch.includes(type)) score += 3;
     else if (answers.type === 'not_sure') score += 1;
 
