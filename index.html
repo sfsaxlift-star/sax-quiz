@@ -597,6 +597,34 @@
       to { transform: rotate(360deg); }
     }
 
+    /* CTA Section (Talk to a specialist) */
+    .sax-quiz__cta {
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .sax-quiz__cta-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 16px;
+    }
+
+    .sax-quiz__cta-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .sax-quiz__no-thanks {
+      margin-top: 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       .sax-quiz {
@@ -1035,18 +1063,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Result -->
   <div class="sax-quiz__result" id="resultState">
-    <div class="sax-quiz__result-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
+
+    <!-- Phase 1: shown after Q6, before form -->
+    <div id="recPhase">
+      <h3 class="sax-quiz__result-title" data-i18n="rec_phase_title">Your Recommendation</h3>
+      <div id="productMatches" class="sax-quiz__products" style="display:none;">
+        <p class="sax-quiz__products-title" data-i18n="products_match_title">Matching Products From Our Range</p>
+        <div class="sax-quiz__product-cards" id="productCards"></div>
+      </div>
+      <div id="ctaSection" class="sax-quiz__cta">
+        <p class="sax-quiz__cta-title" data-i18n="cta_title">Would you like to talk to a lift table specialist?</p>
+        <div class="sax-quiz__cta-buttons">
+          <button class="sax-quiz__btn sax-quiz__btn--next" onclick="SaxQuiz.ctaYes()" data-i18n="cta_yes">Yes, get a quote</button>
+          <button class="sax-quiz__btn sax-quiz__btn--back" onclick="SaxQuiz.ctaNo()" data-i18n="cta_no">No thanks</button>
+        </div>
+      </div>
+      <div id="noThanksSection" class="sax-quiz__no-thanks" style="display:none;">
+        <p data-i18n="cta_no_message">No problem — feel free to browse our full range at saxlift.com</p>
+      </div>
     </div>
-    <h3 class="sax-quiz__result-title" data-i18n="result_title">Thank You!</h3>
-    <p class="sax-quiz__result-text" data-i18n="result_text">We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.<br>A confirmation has been sent to your email for your records.</p>
-    
-    <div id="productMatches" class="sax-quiz__products" style="display:none;">
-      <p class="sax-quiz__products-title">Matching Products From Our Range</p>
-      <div class="sax-quiz__product-cards" id="productCards"></div>
+
+    <!-- Phase 2: shown after form submission -->
+    <div id="thankYouPhase" style="display:none;">
+      <div class="sax-quiz__result-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 class="sax-quiz__result-title" data-i18n="result_title">Thank You!</h3>
+      <p class="sax-quiz__result-text" data-i18n="result_text">We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.<br>A confirmation has been sent to your email for your records.</p>
     </div>
+
   </div>
 
   <!-- Navigation -->
@@ -1067,6 +1114,9 @@ const SaxQuiz = (function() {
   const totalQuestions = 6;
   let answers = {};
   let language = 'en';
+  let currentRecommendation = null;
+  let currentTopProducts    = [];
+  let formVisible           = false;
   
   // Free email domains to flag (soft validation)
   const freeEmailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'mail.com', 'protonmail.com', 'gmx.com', 'web.de', 'gmx.de'];
@@ -1157,6 +1207,12 @@ const SaxQuiz = (function() {
       loading: "Processing your request...",
       result_title: "Thank You!",
       result_text: "We've received your request. A Sax Lift specialist will contact you within 24 hours with your personalized quote.<br>A confirmation has been sent to your email for your records.",
+      rec_phase_title: "Your Recommendation",
+      products_match_title: "Matching Products From Our Range",
+      cta_title: "Would you like to talk to a lift table specialist?",
+      cta_yes: "Yes, get a quote",
+      cta_no: "No thanks",
+      cta_no_message: "No problem — feel free to browse our full range at saxlift.com",
       rec_in_stock: "In Stock – Fast Delivery",
       rec_custom: "Custom Engineered Solution",
       rec_type_stationary: "Stationary Lift Table",
@@ -1199,6 +1255,12 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "In den Boden eingelassen, Plattform bündig mit dem Boden",
       result_title: "Vielen Dank!",
       result_text: "Wir haben Ihre Anfrage erhalten. Ein Sax Lift-Spezialist wird sich innerhalb von 24 Stunden mit Ihrem persönlichen Angebot bei Ihnen melden.<br>Eine Bestätigung wurde zur Ihrer Information an Ihre E-Mail gesendet.",
+      rec_phase_title: "Ihre Empfehlung",
+      products_match_title: "Passende Produkte aus unserem Sortiment",
+      cta_title: "Möchten Sie mit einem Hubtisch-Experten sprechen?",
+      cta_yes: "Ja, Angebot erhalten",
+      cta_no: "Nein danke",
+      cta_no_message: "Kein Problem — besuchen Sie unser volles Sortiment auf saxlift.com",
       rec_custom: "Sonderlösung",
       rec_type_stationary: "Stationärer Hubtisch",
       rec_type_mobile: "Mobiler Hubtisch",
@@ -1237,6 +1299,12 @@ const SaxQuiz = (function() {
       q4_opt3_desc: "Sænket ned i gulvet, platform i niveau med gulvet",
       result_title: "Tak!",
       result_text: "Vi har modtaget din henvendelse. En Sax Lift-specialist vil kontakte dig inden for 24 timer med dit personlige tilbud.<br>En bekræftelse er sendt til din e-mail til orientering.",
+      rec_phase_title: "Din anbefaling",
+      products_match_title: "Matchende produkter fra vores sortiment",
+      cta_title: "Vil du tale med en løftebords-specialist?",
+      cta_yes: "Ja, få et tilbud",
+      cta_no: "Nej tak",
+      cta_no_message: "Intet problem — se vores fulde sortiment på saxlift.com",
       rec_custom: "Specialløsning",
       rec_type_stationary: "Stationært løftebord",
       rec_type_mobile: "Mobilt løftebord",
@@ -1333,6 +1401,12 @@ const SaxQuiz = (function() {
       loading: "Elaborazione della richiesta...",
       result_title: "Grazie!",
       result_text: "Abbiamo ricevuto la tua richiesta. Uno specialista Sax Lift ti contatterà entro 24 ore con il tuo preventivo personalizzato.<br>Una conferma è stata inviata alla tua email per tua documentazione.",
+      rec_phase_title: "La tua raccomandazione",
+      products_match_title: "Prodotti corrispondenti dalla nostra gamma",
+      cta_title: "Vuoi parlare con uno specialista di tavoli elevatori?",
+      cta_yes: "Sì, ricevi un preventivo",
+      cta_no: "No grazie",
+      cta_no_message: "Nessun problema — sfoglia la nostra gamma completa su saxlift.com",
       rec_in_stock: "Disponibile – Consegna rapida",
       rec_custom: "Soluzione su misura",
       rec_type_stationary: "Tavolo elevatore fisso",
@@ -1431,6 +1505,12 @@ const SaxQuiz = (function() {
       loading: "Traitement de votre demande...",
       result_title: "Merci !",
       result_text: "Nous avons reçu votre demande. Un spécialiste Sax Lift vous contactera dans les 24 heures avec votre devis personnalisé.<br>Une confirmation a été envoyée à votre adresse e-mail pour vos dossiers.",
+      rec_phase_title: "Votre recommandation",
+      products_match_title: "Produits correspondants de notre gamme",
+      cta_title: "Souhaitez-vous parler à un spécialiste en tables élévatrices ?",
+      cta_yes: "Oui, obtenir un devis",
+      cta_no: "Non merci",
+      cta_no_message: "Pas de problème — consultez notre gamme complète sur saxlift.com",
       rec_in_stock: "En stock – Livraison rapide",
       rec_custom: "Solution sur mesure",
       rec_type_stationary: "Table élévatrice fixe",
@@ -1604,25 +1684,23 @@ const SaxQuiz = (function() {
     const backBtn = document.getElementById('backBtn');
     const nextBtn = document.getElementById('nextBtn');
     const nextBtnText = nextBtn.querySelector('span');
-    
-    // Back button
-    backBtn.style.display = currentStep > 1 ? 'block' : 'none';
-    
-    // Hide next button during quiz questions — auto-advance handles navigation
-    nextBtn.style.display = currentStep > totalQuestions ? 'block' : 'none';
 
-    // Next button text (form step only)
-    if (currentStep > totalQuestions) {
+    if (formVisible) {
+      // Contact form shown after "Yes" — show both buttons
+      backBtn.style.display = 'block';
+      nextBtn.style.display = 'block';
       nextBtnText.textContent = translations[language]?.btn_submit || 'Get My Quote';
-    }
-
-    // Enable/disable based on selection
-    if (currentStep <= totalQuestions) {
+      validateForm(false);
+    } else if (currentStep > totalQuestions) {
+      // Recommendation phase — CTA buttons handle navigation, hide nav
+      backBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+    } else {
+      // Quiz questions
+      backBtn.style.display = currentStep > 1 ? 'block' : 'none';
+      nextBtn.style.display = 'none'; // auto-advance handles navigation
       const currentAnswer = answers[`q${currentStep}`];
       nextBtn.disabled = !currentAnswer;
-    } else {
-      // On form, enable if required fields are filled
-      validateForm(false);
     }
   }
 
@@ -1730,8 +1808,39 @@ const SaxQuiz = (function() {
   }
 
   // Submit form
+  function showRecommendationScreen() {
+    currentRecommendation = generateRecommendation();
+
+    document.querySelectorAll('.sax-quiz__question').forEach(q => q.classList.remove('active'));
+    document.getElementById('contactForm').classList.remove('active');
+    document.getElementById('resultState').classList.add('active');
+    document.getElementById('recPhase').style.display = '';
+    document.getElementById('thankYouPhase').style.display = 'none';
+    document.getElementById('ctaSection').style.display = '';
+    document.getElementById('noThanksSection').style.display = 'none';
+    document.querySelector('.sax-quiz__subtitle').style.display = 'none';
+    document.getElementById('quizNav').style.display = 'none';
+
+    const container = document.getElementById('productMatches');
+    const cards     = document.getElementById('productCards');
+    container.style.display = 'block';
+    cards.innerHTML = `<p class="sax-quiz__products-loading">${t('products_loading')}</p>`;
+    fetchTopProducts()
+      .then(products => {
+        currentTopProducts = products;
+        if (products.length) renderProductCards(products);
+        else container.style.display = 'none';
+      })
+      .catch(() => { container.style.display = 'none'; });
+
+    pushToDataLayer('quiz_completed', {
+      recommendation_type: currentRecommendation.isCustom ? 'custom' : 'standard',
+      recommendation_product: currentRecommendation.title
+    });
+  }
+
   async function submitForm() {
-    const recommendation = generateRecommendation();
+    const recommendation = currentRecommendation || generateRecommendation();
     const urlParams = getUrlParams();
     const isFreeEmailUsed = isFreeEmail(document.getElementById('email').value);
     
@@ -1788,31 +1897,37 @@ const SaxQuiz = (function() {
     // Format email body
     const emailBody = formatEmailBody(payload, recommendation);
     
-    let topProducts = [];
+    // Use products already fetched on the recommendation screen
+    payload.matchedProducts = currentTopProducts.map(p => ({
+      title:        p.title,
+      link:         p.link,
+      image:        p.image,
+      price:        p.price,
+      availability: p.availability
+    }));
+
     try {
-      // Fetch products first (max 5s), then send to n8n with products included
-      const productTimeout = new Promise(resolve => setTimeout(() => resolve([]), 5000));
-      topProducts = await Promise.race([fetchTopProducts().catch(() => []), productTimeout]);
-
-      payload.matchedProducts = topProducts.map(p => ({
-        title:        p.title,
-        link:         p.link,
-        image:        p.image,
-        price:        p.price,
-        availability: p.availability
-      }));
-
       // Fire n8n (non-blocking — retries once, shows warning if both fail)
       postToWebhook(payload);
 
-      showResult(recommendation, topProducts);
+      // Show Phase 2 (thank you)
+      document.getElementById('contactForm').classList.remove('active');
+      document.getElementById('loadingState').classList.remove('active');
+      document.getElementById('resultState').classList.add('active');
+      document.getElementById('recPhase').style.display = 'none';
+      document.getElementById('thankYouPhase').style.display = '';
+      document.getElementById('quizNav').style.display = 'none';
+      formVisible = false;
 
     } catch (error) {
       console.error('[Quiz] Submit error:', error);
-      showResult(recommendation, topProducts);
-      pushToDataLayer('quiz_submit_error', {
-        error_message: error.message
-      });
+      document.getElementById('loadingState').classList.remove('active');
+      document.getElementById('resultState').classList.add('active');
+      document.getElementById('recPhase').style.display = 'none';
+      document.getElementById('thankYouPhase').style.display = '';
+      document.getElementById('quizNav').style.display = 'none';
+      formVisible = false;
+      pushToDataLayer('quiz_submit_error', { error_message: error.message });
     }
   }
   
@@ -2111,25 +2226,6 @@ Submitted: ${payload.submittedAt}
   // ─────────────────────────────────────────────────────────────────
 
   // Show result
-  function showResult(recommendation, prefetchedProducts) {
-    document.getElementById('loadingState').classList.remove('active');
-    document.getElementById('resultState').classList.add('active');
-    document.querySelector('.sax-quiz__subtitle').style.display = 'none';
-
-    // Render product matches (reuse already-fetched products to avoid re-fetching)
-    if (prefetchedProducts && prefetchedProducts.length) {
-      renderProductCards(prefetchedProducts);
-    } else {
-      loadProductRecommendations();
-    }
-
-    // Push to GTM
-    pushToDataLayer('quiz_completed', {
-      recommendation_type: recommendation.isCustom ? 'custom' : 'standard',
-      recommendation_product: recommendation.title
-    });
-  }
-
   // Public methods
   return {
     selectOption: function(element) {
@@ -2184,19 +2280,13 @@ Submitted: ${payload.submittedAt}
             step_number: currentStep
           });
         } else {
-          // Show form
-          document.querySelectorAll('.sax-quiz__question').forEach(q => {
-            q.classList.remove('active');
-          });
-          document.getElementById('contactForm').classList.add('active');
-          
-          // Push to GTM
-          pushToDataLayer('quiz_form_view');
+          // Show recommendation screen (Phase 1)
+          showRecommendationScreen();
         }
-        
+
         updateNav();
       } else {
-        // Submit form
+        // Submit form (only reachable when formVisible = true after ctaYes)
         if (validateForm(true)) {
           submitForm();
         }
@@ -2204,24 +2294,89 @@ Submitted: ${payload.submittedAt}
     },
     
     prevStep: function() {
-      if (currentStep > 1) {
-        if (currentStep > totalQuestions) {
-          // Going back from form to last question
-          document.getElementById('contactForm').classList.remove('active');
-        }
-        
+      if (formVisible) {
+        // Back from contact form → return to recommendation Phase 1
+        document.getElementById('contactForm').classList.remove('active');
+        document.getElementById('resultState').classList.add('active');
+        document.getElementById('ctaSection').style.display = '';
+        document.getElementById('noThanksSection').style.display = 'none';
+        document.getElementById('quizNav').style.display = 'none';
+        formVisible = false;
+        pushToDataLayer('quiz_back', { step_number: 'form' });
+        return;
+      }
+
+      if (currentStep > totalQuestions) {
+        // Back from recommendation screen → return to Q6
+        document.getElementById('resultState').classList.remove('active');
+        document.getElementById('quizNav').style.display = '';
         currentStep--;
         updateProgress();
         showQuestion(currentStep);
         updateNav();
-        
-        // Push to GTM
-        pushToDataLayer('quiz_back', {
-          step_number: currentStep
-        });
+        pushToDataLayer('quiz_back', { step_number: currentStep });
+        return;
+      }
+
+      if (currentStep > 1) {
+        currentStep--;
+        updateProgress();
+        showQuestion(currentStep);
+        updateNav();
+        pushToDataLayer('quiz_back', { step_number: currentStep });
       }
     },
     
+    ctaYes: function() {
+      document.getElementById('ctaSection').style.display = 'none';
+      document.getElementById('resultState').classList.remove('active');
+      document.getElementById('contactForm').classList.add('active');
+      document.getElementById('quizNav').style.display = '';
+      formVisible = true;
+      updateNav();
+      pushToDataLayer('quiz_form_view');
+    },
+
+    ctaNo: function() {
+      document.getElementById('ctaSection').style.display = 'none';
+      document.getElementById('noThanksSection').style.display = '';
+
+      const urlParams = getUrlParams();
+      const payload = {
+        fullName: null, email: null, phone: null, company: null, message: null,
+        application:  getLocalizedLabel('q1', answers.application || answers.q1),
+        capacity:     getLocalizedLabel('q2', answers.capacity    || answers.q2),
+        height:       getLocalizedLabel('q3', answers.height      || answers.q3),
+        type:         getLocalizedLabel('q4', answers.type        || answers.q4),
+        environment:  getLocalizedLabel('q5', answers.environment || answers.q5),
+        timeline:     getLocalizedLabel('q6', answers.timeline    || answers.q6),
+        isCustomSolution:   currentRecommendation ? currentRecommendation.isCustom : false,
+        isFreeEmail:        false,
+        recommendedProduct: currentRecommendation ? currentRecommendation.title : '',
+        matchedProducts:    currentTopProducts.map(p => ({
+          title: p.title, price: p.price, availability: p.availability, link: p.link
+        })),
+        formSubmitted: false,
+        language,
+        country: { en: 'United Kingdom', da: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy' }[language] || 'United Kingdom',
+        pageUrl: window.location.href,
+        submittedAt: new Date().toISOString(),
+        quizVersion: '1.0',
+        ...urlParams
+      };
+
+      fetch('https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-quiz-secret': 'sax2025quiz' },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+
+      pushToDataLayer('quiz_no_thanks', {
+        recommendation_product: payload.recommendedProduct,
+        is_custom_solution: payload.isCustomSolution
+      });
+    },
+
     changeLanguage: function(lang) {
       language = lang;
       const trans = translations[lang] || translations.en;
