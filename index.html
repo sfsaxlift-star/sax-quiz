@@ -1537,7 +1537,7 @@ const SaxQuiz = (function() {
 
   // Post lead to n8n webhook with one retry and a visible fallback if both fail
   async function postToWebhook(payload) {
-    const WEBHOOK_URL = 'https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission';
+    const WEBHOOK_URL = 'https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission';
     const makeOpts = () => ({
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-quiz-secret': 'sax2025quiz' },
@@ -2369,7 +2369,7 @@ Submitted: ${payload.submittedAt}
         ...urlParams
       };
 
-      fetch('https://saxlift.app.n8n.cloud/webhook-test/sax-quiz-submission', {
+      fetch('https://saxlift.app.n8n.cloud/webhook/sax-quiz-submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-quiz-secret': 'sax2025quiz' },
         body: JSON.stringify(payload)
