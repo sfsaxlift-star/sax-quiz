@@ -1876,7 +1876,8 @@ const SaxQuiz = (function() {
       country: { en: 'United Kingdom', da: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy' }[language] || '',
       quizVersion: '1.0',
       submittedAt: new Date().toISOString(),
-      pageUrl: window.location.href
+      pageUrl: window.location.href,
+      formSubmitted: true
     };
     
     // Push to GTM
