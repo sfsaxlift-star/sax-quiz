@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Sax Lift Quick Finder</title>
+  <g transform="translate(0 0) scale(1)"><rect width="64" height="64" rx="14" fill="#37a657"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="27.5" cy="27.5" r="15.5" stroke-width="4.5"/>
+    <line x1="39" y1="39" x2="50" y2="50" stroke-width="7"/>
+    <line x1="19.5" y1="22" x2="35.5" y2="22" stroke-width="3.4"/>
+    <path d="M22 23 33 32.5M33 23 22 32.5" stroke-width="2.8"/>
+    <line x1="19.5" y1="33.5" x2="35.5" y2="33.5" stroke-width="3.4"/>
+  </g></g>
+</svg>
